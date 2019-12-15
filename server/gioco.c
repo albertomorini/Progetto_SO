@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <time.h> //for random
-#define MAXDIMPILA 100
 
 
 struct statoGioco{
