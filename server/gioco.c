@@ -1,59 +1,97 @@
-#include <stdio.h>
-#include <time.h> //for random
+#include "gioco.h"
 
-
-struct statoGioco{
+struct partitaGioco
+{
     int PilaA;
     int PilaB;
     int PID_Vincitore;
-}stato;
-/**
- * Metodo di creazione del gioco, si occupa di instanziare le variabili necessarie e di gestire lo sviluppo del gioco.
- * Crea un numero random di pedine per ogni pila(2)
- * Interagisce col client
- */
-int creaGioco()
+}partita;
+struct scelta
 {
+    char Pila;
+    int numPedine;
+}scelta;
 
-    srand(time(NULL));  // Initialization, should only be called once.
+
+int creaGioco(int Player1, int Player2)
+{
+    srand(time(NULL)); // Initialization, should only be called once.
     //Da 2 a 50 pedine.. 1 pedina rappresenterebbe la vincita certa dell'avversario
-    int PilaA = 2 + rand() % 50; 
-    int PilaB = 2 + rand() % 50;
-    aggiornaStruct(PilaA,PilaB);
-
-/*
-    printf("%d \n", PilaA);
-    printf("%d \n", PilaB);
-    printf("%d", rimuoviPedina(PilaA, 8));
-*/
-    
-}
-/**
- * Rimuove le pedine dalla pila se possibile altrimenti torna "-1"
- * @param Pila è la Pila slezionata
- * @param numPedine numero pedine da togliere (<= Pila per aver successo)
- */
-int rimuoviPedina(int Pila, int numPedine)
-{
-    if (numPedine <= Pila)
+    partita.PilaA = 2 + rand() % 50;
+    partita.PilaB = 2 + rand() % 50;
+    partita.PID_Vincitore = 0;
+   
+    //TODO: impostare una guardia aggiuntiva->il gioco continua finché entrambi i client sono connessi
+    while (partita.PID_Vincitore == 0)
     {
-        return Pila -= numPedine;
-    }else{
-        return -1;
+        //comunica con il player1: informa sullo stato partita
+        riceviDaClient(Player1); //TODO: adattare e passare parametri, tipo socket
+
+        //Se il player1 non ha vinto con la mossa, turno player 2
+        if (partita.PID_Vincitore == 0){
+            //comunica con il player2: informa sullo stato partita
+            riceviDaClient(Player2);
+        }   
     }
 }
-//Inserisce il PID del player che ha vinto nella struct
-void setVincitore(int vincitore){
-    stato.PID_Vincitore=vincitore;
-}
-//Aggiorna il numero di pedine nelle varie pile.
-void aggiornaStruct(int PilaA, int PilaB){
-    stato.PilaA= PilaA;
-    stato.PilaB= PilaB;
+
+void riceviDaClient(int PIDplayer)
+{
+    int status = 1; //se "-1", mossa non valida
+    /*Avviene un doppio controllo, il primo se la pila scelta è valida
+        *Il secondo se il numero di pedine da rimuovere è valido, nel caso Falso torna -1 e richiedo al client
+        */
+    do{
+        //riceve struct da inserire nella struct "scelta"
+
+        if (scelta.Pila == 'A')
+        {
+            status = checkRimozione(partita.PilaA, scelta.numPedine);
+        }
+        else if (scelta.Pila == 'B')
+        {
+            status = checkRimozione(partita.PilaB, scelta.numPedine);
+        }
+        else
+        {
+            status = 1;
+            char errore[100] = "Errore, Pila errata o numero di pedine sbagliato";
+            //send errore to client
+        }
+    } while (status == 1); //finché scelta non valida
+
+
+    //Rimuovo pedine dalla pila scelta
+    if (scelta.Pila == 'A')
+    {
+        partita.PilaA -= scelta.numPedine;
+    }
+    else if (scelta.Pila == 'B')
+    {
+        partita.PilaB -= scelta.numPedine;
+    }
+    checkVittoria(PIDplayer);
 }
 
-void printStatoPartita(){
-    printf("Stato partita:\n");
-    prinf("Pila A: %d \n Pila B: %d \n",stato.PilaA,stato.PilaB);
+int checkRimozione(int Pila, int numPedine)
+{
+    if (numPedine <= Pila && numPedine != 0)
+    {
+        return 0;
+    }
+    return 1;
 }
 
+void checkVittoria(int PID_player){
+    if (partita.PilaA == 0 && partita.PilaB == 0)
+    {
+        partita.PID_Vincitore = PID_player;
+       
+    }
+}
+
+void printPile()
+{
+    printf("stato partita:\n");
+    printf("Pila A: %d \n Pila B: %d \n", partita.PilaA, partita.PilaB);
+}
