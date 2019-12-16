@@ -34,3 +34,13 @@ void printPile();
  * Se le pile sono entrambe vuote(==0, non <0) assegno la vittoria al PID passato come parametro
  */
 void checkVittoria(int PIDplayer);
+
+/*
+    Invia gli aggiornamenti della partita ai due client
+*/
+void aggiornaStatoPartita();
+
+/*
+    Controlla che i giocatori siano online
+*/
+int controllaConnessioneGiocatori()

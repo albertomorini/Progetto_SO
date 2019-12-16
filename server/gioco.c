@@ -12,23 +12,34 @@ int creaGioco(int Player1, int Player2)
     partita.PilaB = 2 + rand() % 50;
     partita.PID_Vincitore = 0;
    
+
     //TODO: impostare una guardia aggiuntiva->il gioco continua finché entrambi i client sono connessi
-    while (partita.PID_Vincitore == 0)
-    {
-        //comunica con il player1: informa sullo stato partita
-        riceviDaClient(Player1); //TODO: adattare e passare parametri, tipo socket
+    while (partita.PID_Vincitore == 0 && controllaConnessioneGiocatori()==1 )
+    { 
+        aggiornaStatoPartita();//aggiorna i due client dello stato della partita
+
+        //TODO: adattare e passare parametri, tipo socket
+        riceviDaClient(Player1); //attende la risposta della mossa da player1
+        
+        //se l'azione compiuta dal player è corretta allora aggiorno lo stato della partita 
+        aggiornaStatoPartita();
 
         //Se il player1 non ha vinto con la mossa, turno player 2
         if (partita.PID_Vincitore == 0){
             //comunica con il player2: informa sullo stato partita
             riceviDaClient(Player2);
-        }   
+
+            //se l'azione compiuta dal player è corretta allora aggiorno lo stato della partita 
+            aggiornaStatoPartita();
+        }
+
+
     }
 }
 
 void riceviDaClient(int PIDplayer)
 {
-    int status = 1; //se "-1", mossa non valida
+    scelta.status = 1; //se "-1", mossa non valida
     /*Avviene un doppio controllo, il primo se la pila scelta è valida
         *Il secondo se il numero di pedine da rimuovere è valido, nel caso Falso torna -1 e richiedo al client
         */
@@ -37,19 +48,19 @@ void riceviDaClient(int PIDplayer)
 
         if (scelta.Pila == 'A')
         {
-            status = checkRimozione(partita.PilaA, scelta.numPedine);
+            scelta.status = checkRimozione(partita.PilaA, scelta.numPedine);
         }
         else if (scelta.Pila == 'B')
         {
-            status = checkRimozione(partita.PilaB, scelta.numPedine);
+            scelta.status = checkRimozione(partita.PilaB, scelta.numPedine);
         }
         else
         {
-            status = 1;
+            scelta.status = 1;
             char errore[100] = "Errore, Pila errata o numero di pedine sbagliato";
             //send errore to client
         }
-    } while (status == 1); //finché scelta non valida
+    } while (scelta.status == 1); //finché scelta non valida
 
 
     //Rimuovo pedine dalla pila scelta
