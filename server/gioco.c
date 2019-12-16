@@ -1,16 +1,7 @@
 #include "gioco.h"
+#include "../common.h"
 
-struct partitaGioco
-{
-    int PilaA;
-    int PilaB;
-    int PID_Vincitore;
-}partita;
-struct scelta
-{
-    char Pila;
-    int numPedine;
-}scelta;
+
 
 
 int creaGioco(int Player1, int Player2)
@@ -94,4 +85,11 @@ void printPile()
 {
     printf("stato partita:\n");
     printf("Pila A: %d \n Pila B: %d \n", partita.PilaA, partita.PilaB);
+}
+
+int main(int argc, char const *argv[])
+{   
+    partita.PilaA=29;
+    printf("%d",partita.PilaA);
+    return 0;
 }
