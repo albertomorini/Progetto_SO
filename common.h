@@ -1,5 +1,8 @@
 // Header comune al Server e Client
 
+//indirizzo dove verrà salvato il file temporaneo per la comunicazione socket
+#define SOCKADDR "/tmp/upperserver.socket"
+
 
 struct partitaGioco
 {

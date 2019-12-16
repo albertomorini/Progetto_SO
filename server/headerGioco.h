@@ -43,4 +43,4 @@ void aggiornaStatoPartita();
 /*
     Controlla che i giocatori siano online
 */
-int controllaConnessioneGiocatori()
+int controllaConnessioneGiocatori();

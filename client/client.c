@@ -20,7 +20,7 @@ int main()
 void prendiInput()
 {
 
-    printf("Scegli la pila: ");
+    printf("Scegli la pila:");
     scanf("%c",&scelta.Pila);
     printf("Indica il numero di pedine: ");
     scanf("%d",&scelta.numPedine);

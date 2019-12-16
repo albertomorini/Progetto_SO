@@ -1,4 +1,4 @@
-#include "gioco.h"
+#include "headerGioco.h"
 #include "../common.h"
 
 
@@ -6,10 +6,10 @@
 
 int creaGioco(int Player1, int Player2)
 {
-    srand(time(NULL)); // Initialization, should only be called once.
+    //srand(time(NULL)); // Initialization, should only be called once.
     //Da 2 a 50 pedine.. 1 pedina rappresenterebbe la vincita certa dell'avversario
-    partita.PilaA = 2 + rand() % 50;
-    partita.PilaB = 2 + rand() % 50;
+    //partita.PilaA = 2 + rand() % 50;
+    //partita.PilaB = 2 + rand() % 50;
     partita.PID_Vincitore = 0;
    
 
@@ -35,14 +35,16 @@ int creaGioco(int Player1, int Player2)
 
 
     }
+    return 1;
 }
-
+ 
+/*
 void riceviDaClient(int PIDplayer)
 {
     scelta.status = 1; //se "-1", mossa non valida
-    /*Avviene un doppio controllo, il primo se la pila scelta è valida
+    Avviene un doppio controllo, il primo se la pila scelta è valida
         *Il secondo se il numero di pedine da rimuovere è valido, nel caso Falso torna -1 e richiedo al client
-        */
+        
     do{
         //riceve struct da inserire nella struct "scelta"
 
@@ -103,4 +105,4 @@ int main(int argc, char const *argv[])
     partita.PilaA=29;
     printf("%d",partita.PilaA);
     return 0;
-}
+}*/
