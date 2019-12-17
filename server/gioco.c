@@ -38,12 +38,13 @@ int creaGioco(int Player1, int Player2)
     return 1;
 }
  
-/*
+
 void riceviDaClient(int PIDplayer)
 {
-    scelta.status = 1; //se "-1", mossa non valida
-    Avviene un doppio controllo, il primo se la pila scelta è valida
-        *Il secondo se il numero di pedine da rimuovere è valido, nel caso Falso torna -1 e richiedo al client
+    scelta.status = 1;
+     //se "-1", mossa non valida
+    //Avviene un doppio controllo, il primo se la pila scelta è valida
+    //Il secondo se il numero di pedine da rimuovere è valido, nel caso Falso torna -1 e richiedo al client
         
     do{
         //riceve struct da inserire nella struct "scelta"
@@ -105,4 +106,4 @@ int main(int argc, char const *argv[])
     partita.PilaA=29;
     printf("%d",partita.PilaA);
     return 0;
-}*/
+}
