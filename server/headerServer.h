@@ -9,5 +9,6 @@
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <signal.h>
-
-
+#include <pthread.h>
+#include "../common.h"
+#include <math.h>
