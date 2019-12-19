@@ -8,7 +8,7 @@
 #include <sys/un.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
+#include <signal.h>
 
 /*
 imposto l'indirizzo del socket
