@@ -16,15 +16,29 @@
 
 #include <time.h> //for random
 
-void *Partita(void *fd);
+void *creaPartita(void *fd);
 
 /**
- * Player1, Player2 = PID dei giocatori(clients)
+ * Player1, Player2 = file descriptor dei giocatori(clients)
  * Metodo di creazione del gioco, si occupa di instanziare le variabili necessarie e di gestire lo sviluppo del gioco.
  * Crea un numero random di pedine per ogni pila(2)
  * Interagisce col client
  */
-int creaGioco(int Player1, int Player2);
+void gestioneGioco(void *fd);
+
+
+t_partita riceviAzione(t_partita stato, int player);
+
+
+/*
+    Invia gli aggiornamenti della partita ai due client
+*/
+void aggiornaStatoPartita(t_partita stato,t_coppia *fd);
+
+/*
+    Invia messaggi ai client
+*/
+void inviaMessaggio(int fd,char *msg);
 
 /**
  * Si occupa di ricevere la struttura scelta dal client e aggiornare quella locale
@@ -49,11 +63,6 @@ void printPile();
  * Se le pile sono entrambe vuote(==0, non <0) assegno la vittoria al PID passato come parametro
  */
 void checkVittoria(int PIDplayer);
-
-/*
-    Invia gli aggiornamenti della partita ai due client
-*/
-void aggiornaStatoPartita();
 
 /*
     Controlla che i giocatori siano online

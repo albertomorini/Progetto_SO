@@ -24,3 +24,4 @@ typedef struct coppia
     int FD_Player1;
     int FD_Player2;
 }t_coppia;
+

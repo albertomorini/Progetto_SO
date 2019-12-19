@@ -20,5 +20,9 @@ const struct sockaddr_un addr = {
   .sun_path = SOCKADDR
 };
 
+t_scelta prendiInput();
+
+void riceviMessaggio(int server);
+
 //Comunica con l'utente per sapere la pila e il numero di pedine
 void aggiornaStato();

@@ -13,29 +13,36 @@ int main()
 
     //casting obbligatorio dell'indirizzo del client
     //(const struct sockaddr *)&addr
-    int fd = connect(sock, (const struct sockaddr *)&addr, client_len);
+    int server = connect(sock, (const struct sockaddr *)&addr, client_len);
     //TODO:gestire eventuali errori di connesione valutando fd
 
+    riceviMessaggio(server);
 
     while(1){
-        //riceve dati dalla struct e li salva nel buffet stato
-        recv(sock, &stato, sizeof(t_partita), 0);
-        printf("PilaA: %d\n", stato.PilaA);
+        //riceve lo stato della partita
+        recv(server, &stato, sizeof(t_partita), 0);
+        printf("\nPilaA: %d\n", stato.PilaA);
         printf("PilaB: %d\n", stato.PilaB);
+
+        //invia l'azione al server
+        t_scelta azione=prendiInput();
+        send(server,&azione, sizeof(t_scelta),0);
+
     }
 
+    
+    
+}
 
-    /*
-    do
-    {
-        //ricezione stato partita e update della struttura partita
-        prendiInput();
-        //invia al server la struttura scelta
-        //ricevi dal server
-    } while (partita.PID_Vincitore == 0);
-    */
-    
-    
+void riceviMessaggio(int server){
+    int byteMessaggio;
+    recv(server,&byteMessaggio,sizeof(int),0);
+    byteMessaggio=byteMessaggio*sizeof(char);
+    char *msg;
+    recv(server,&msg,byteMessaggio,0);
+    for(int i=0;i<strlen(msg);i++){
+        printf("%c",*(msg + i));
+    }
 }
 
 t_scelta prendiInput()
