@@ -29,10 +29,12 @@ typedef struct scelta
 /**
  * Struct di supporto che memorizza i FileDescriptor dei client
  * Il server la instanzia e la popola per poi "passarla" al thread che si occuperà di comunicare con i client
+ * Con anche la socket del server per ricevere dal client
 */
 
 typedef struct coppia
 {
     int FD_Player1;
     int FD_Player2;
+    int SocketServer;
 }t_coppia;
