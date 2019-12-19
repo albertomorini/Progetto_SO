@@ -1,5 +1,12 @@
 #include "headerClient.h"
 
+void avvisaUscita()
+{
+    printf("Ok, bye bye! \n");
+    //TODO: comunicare al server l'uscita
+    //Volendo si può fare un controllo, tipo "sicuro di uscire? Digita n" etc.
+    //Però bah, è superfluo, cioè ctrl+c vuol dire che sai già di voler uscire ahah
+}
 int main()
 {
     //impostazione del socket locale
@@ -14,8 +21,17 @@ int main()
     //casting obbligatorio dell'indirizzo del client
     //(const struct sockaddr *)&addr
     int fd = connect(sock, (const struct sockaddr *)&addr, client_len);
-    //TODO:gestire eventuali errori di connesione valutando fd
 
+    //
+    signal(SIGINT, avvisaUscita); //CTRL+C
+    //Da provare, uno di questi, penso il "SIGQUIT" è nel caso si chiuda il terminale
+    //da tenere anche SIGKILL e SIGTERM
+    signal(SIGTERM, avvisaUscita);
+    signal(SIGKILL, avvisaUscita);
+    signal(SIGQUIT, avvisaUscita);
+    
+    signal(SIGABRT, avvisaUscita);
+    signal(SIGSTOP, avvisaUscita);
 
     while(1){
         //riceve dati dalla struct e li salva nel buffet stato
