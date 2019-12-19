@@ -47,10 +47,11 @@ int main()
         //instanzio il thread che lancerà la procedura di partita
         pthread_t thread;
 
+        coppiaLoc.SocketServer=sock;
         //lancio la partita
         pthread_create(&thread, NULL, Partita, (void *)&coppiaLoc);
         //Chiudo le socket
         close(fd1);
-        close(fd2);        
+        close(fd2);
     }
 }
