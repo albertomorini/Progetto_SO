@@ -39,36 +39,23 @@ int main()
 
         //accetto la connessione di player1
         int fd1 = accept(sock, (struct sockaddr *)&client_addr, &client_len);
-<<<<<<< HEAD
         Players.FD_Player1 = fd1;
-=======
-        coppiaLoc.FD_Player1 = fd1;
->>>>>>> fafaa3a711cd78e1146c186ca124d464e3799d2b
         fprintf(stderr,"Player 1 connesso, attendo l'avversario..\n");
         
         //accetto la connessione del player2
         int fd2 = accept(sock, (struct sockaddr *)&client_addr, &client_len);
-<<<<<<< HEAD
         Players.FD_Player2 = fd2;
         fprintf(stderr,"\nPlayer 2 connesso, avvio la partita..\n");
-=======
-        coppiaLoc.FD_Player2 = fd2;
-        fprintf(stderr,"Player 2 connesso, avvio la partita..\n");
->>>>>>> fafaa3a711cd78e1146c186ca124d464e3799d2b
+
 
         //instanzio il thread che lancerà la procedura di partita
         pthread_t thread;
-
-        coppiaLoc.SocketServer=sock;
+        
         //lancio la partita
-<<<<<<< HEAD
         pthread_create(&thread, NULL, creaPartita, (void *)&Players);
         
-=======
-        pthread_create(&thread, NULL, Partita, (void *)&coppiaLoc);
         //Chiudo le socket
         close(fd1);
         close(fd2);
->>>>>>> fafaa3a711cd78e1146c186ca124d464e3799d2b
     }
 }

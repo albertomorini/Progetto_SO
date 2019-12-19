@@ -26,3 +26,6 @@ void riceviMessaggio(int server);
 
 //Comunica con l'utente per sapere la pila e il numero di pedine
 void aggiornaStato();
+
+//Se un segnale viene eseguito, viene invocata la procedura avvisaUscita che si occuperà di avvisare il server
+void avvisaUscita();

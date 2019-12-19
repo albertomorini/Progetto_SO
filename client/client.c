@@ -1,14 +1,19 @@
 #include "headerClient.h"
 
-void avvisaUscita()
-{
-    printf("Ok, bye bye! \n");
-    //TODO: comunicare al server l'uscita
-    //Volendo si può fare un controllo, tipo "sicuro di uscire? Digita n" etc.
-    //Però bah, è superfluo, cioè ctrl+c vuol dire che sai già di voler uscire ahah
-}
+
 int main()
-{
+{   
+    //Avvio i segnali
+    signal(SIGINT, avvisaUscita); //CTRL+C
+    //Da provare, uno di questi, penso il "SIGQUIT" è nel caso si chiuda il terminale
+    //da tenere anche SIGKILL e SIGTERM
+    signal(SIGTERM, avvisaUscita);
+    signal(SIGKILL, avvisaUscita);
+    signal(SIGQUIT, avvisaUscita);
+    
+    signal(SIGABRT, avvisaUscita);
+    signal(SIGSTOP, avvisaUscita);
+
     //impostazione del socket locale
     int sock = socket(AF_LOCAL, SOCK_STREAM, 0);
     
@@ -20,25 +25,9 @@ int main()
 
     //casting obbligatorio dell'indirizzo del client
     //(const struct sockaddr *)&addr
-<<<<<<< HEAD
     int server = connect(sock, (const struct sockaddr *)&addr, client_len);
-    //TODO:gestire eventuali errori di connesione valutando fd
 
     riceviMessaggio(server);
-=======
-    int fd = connect(sock, (const struct sockaddr *)&addr, client_len);
-
-    //
-    signal(SIGINT, avvisaUscita); //CTRL+C
-    //Da provare, uno di questi, penso il "SIGQUIT" è nel caso si chiuda il terminale
-    //da tenere anche SIGKILL e SIGTERM
-    signal(SIGTERM, avvisaUscita);
-    signal(SIGKILL, avvisaUscita);
-    signal(SIGQUIT, avvisaUscita);
-    
-    signal(SIGABRT, avvisaUscita);
-    signal(SIGSTOP, avvisaUscita);
->>>>>>> fafaa3a711cd78e1146c186ca124d464e3799d2b
 
     while(1){
         //riceve lo stato della partita
@@ -53,7 +42,7 @@ int main()
     }
 
     
-    
+    return 0;
 }
 
 void riceviMessaggio(int server){
@@ -65,6 +54,7 @@ void riceviMessaggio(int server){
     for(int i=0;i<strlen(msg);i++){
         printf("%c",*(msg + i));
     }
+    return NULL;
 }
 
 t_scelta prendiInput()
@@ -77,5 +67,12 @@ t_scelta prendiInput()
     return azione;
 }
 
-
+void avvisaUscita()
+{
+    printf("Ok, bye bye! \n");
+    //TODO: comunicare al server l'uscita
+    //Volendo si può fare un controllo, tipo "sicuro di uscire? Digita n" etc.
+    //Però bah, è superfluo, cioè ctrl+c vuol dire che sai già di voler uscire ahah
+    return NULL;
+}
 
