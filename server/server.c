@@ -1,16 +1,12 @@
 #include "headerServer.h"
 
-
-/**
- * Struct che memorizza i vari FileDescriptor dei client
- * così da poterli passare al thread.
- * NB: da mettere nella classe gioco.c e chiamare CreaPartita al posto di Partit.. ora ho fatto su questa classe per provare
-*/
-
 int main()
-{
-    fprintf(stderr,"In ascolto..\n");
-    //Inizializzo socket
+{   
+    fprintf(stderr,"---Server ON---\n");
+
+    //chiamata fatta una volta per inizializzare il random, così da evitare da avere random uguali ogni volta
+    srand(time(NULL)); 
+    //Inizializzo socket server
     int sock = socket(AF_LOCAL, SOCK_STREAM, 0);
 
     // imposto l'indirizzo del socket
@@ -30,9 +26,11 @@ int main()
     // Abilito effettivamente l'ascolto, con un massimo di 20 client in attesa
     listen(sock, 20);
 
+    //Istanzio la struct t_coppia per mantenere i FileDescriptor dei client che si connetteranno
+    //per poi passarla a gioco.c che gestirà la partita e comunicherà con i client
+
     while (1)
-    {
-        //inizializzo parametri di connessione
+    {   
         struct sockaddr_un client_addr;
         socklen_t client_len = sizeof(client_addr);
 
@@ -41,17 +39,36 @@ int main()
 
         //accetto la connessione di player1
         int fd1 = accept(sock, (struct sockaddr *)&client_addr, &client_len);
+<<<<<<< HEAD
         Players.FD_Player1 = fd1;
+=======
+        coppiaLoc.FD_Player1 = fd1;
+>>>>>>> fafaa3a711cd78e1146c186ca124d464e3799d2b
         fprintf(stderr,"Player 1 connesso, attendo l'avversario..\n");
         
+        //accetto la connessione del player2
         int fd2 = accept(sock, (struct sockaddr *)&client_addr, &client_len);
+<<<<<<< HEAD
         Players.FD_Player2 = fd2;
         fprintf(stderr,"\nPlayer 2 connesso, avvio la partita..\n");
+=======
+        coppiaLoc.FD_Player2 = fd2;
+        fprintf(stderr,"Player 2 connesso, avvio la partita..\n");
+>>>>>>> fafaa3a711cd78e1146c186ca124d464e3799d2b
 
+        //instanzio il thread che lancerà la procedura di partita
         pthread_t thread;
-        //è compito del thread gestire le connessioni
+
+        coppiaLoc.SocketServer=sock;
         //lancio la partita
+<<<<<<< HEAD
         pthread_create(&thread, NULL, creaPartita, (void *)&Players);
         
+=======
+        pthread_create(&thread, NULL, Partita, (void *)&coppiaLoc);
+        //Chiudo le socket
+        close(fd1);
+        close(fd2);
+>>>>>>> fafaa3a711cd78e1146c186ca124d464e3799d2b
     }
 }

@@ -3,7 +3,10 @@
 //indirizzo dove verrà salvato il file temporaneo per la comunicazione socket
 #define SOCKADDR "/tmp/upperserver.socket"
 
-
+/**
+ * Struct utilizzata per salvare la mossa del player che verrà 
+ * poi comunicata al server
+ */
 typedef struct partitaGioco
 {
     int PilaA;
@@ -12,6 +15,10 @@ typedef struct partitaGioco
 
 }t_partita;
 
+/**
+ * Struct utilizzata per salvare la mossa del player che verrà 
+ * poi comunicata al server
+ */
 typedef struct scelta
 {
     char Pila;
@@ -19,9 +26,16 @@ typedef struct scelta
     int status;
 }t_scelta;
 
+/**
+ * Struct di supporto che memorizza i FileDescriptor dei client
+ * Il server la instanzia e la popola per poi "passarla" al thread che si occuperà di comunicare con i client
+ * Con anche la socket del server per ricevere dal client
+*/
+
 typedef struct coppia
 {
     int FD_Player1;
     int FD_Player2;
+    int SocketServer;
 }t_coppia;
 
