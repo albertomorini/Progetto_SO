@@ -4,44 +4,11 @@
  * Struct che memorizza i vari FileDescriptor dei client
  * così da poterli passare al thread.
  * NB: da mettere nella classe gioco.c e chiamare CreaPartita al posto di Partit.. ora ho fatto su questa classe per provare
- */
-struct structCoppia
-{
-    //TODO: save socket player1 and player2?
-    //Per comunicare dal client a server, ho socket diverse??
-    //Cioè una per client? O no?
-    int FD_Player1;
-    
-    int FD_Player2;
-
-};
-
-void *Partita(void *fd)
-{
-
-    //cast alla struct dove trovo i player
-    struct structCoppia coppiataLoc = *(struct structCoppia *)fd;
-
-    //genero random le pile
-    partita.PilaA = 2 + rand() % 48;
-    partita.PilaB = 2 + rand() % 48;
-    partita.PID_Vincitore = 0;
-
-    //invio, ho provato anche con il while, mi va a volte
-    while(1){
-        send(coppiataLoc.FD_Player1, &partita, sizeof(coppiataLoc), 0); // Invio lunghezza del
-        send(coppiataLoc.FD_Player2, &partita, sizeof(coppiataLoc), 0); // Invio lunghezza
-    }
-   
-
-    return NULL;
-}
+*/
 
 int main()
 {
-    printf("Server ON"); //TODO: Non stampa a me
-    
-
+    fprintf(stderr,"Server ON");
     //Inizializzo socket
     int sock = socket(AF_LOCAL, SOCK_STREAM, 0);
 
@@ -52,7 +19,7 @@ int main()
 
     unlink(SOCKADDR);
     // lego l'indirizzo al socket di ascolto
-    if (bind(sock, (struct sockaddr *)&addr, sizeof addr) == -1)
+    if (bind(sock,(struct sockaddr *)&addr, sizeof addr) == -1)
     {
         perror("bind()");
         return 2;
@@ -61,35 +28,27 @@ int main()
     // Abilito effettivamente l'ascolto, con un massimo di 20 client in attesa
     listen(sock, 20);
 
-    pthread_t arrayThread[200]; //array di thread(fino a 200 partite ora)
-    int counter = 0;
-    struct structCoppia coppiaLoc; 
+    //pthread_t arrayThread[200]; //array di thread(fino a 200 partite ora)
+    t_coppia coppiaLoc; 
 
     while (1)
     {
         struct sockaddr_un client_addr;
         socklen_t client_len = sizeof(client_addr);
 
-        //accetto la connessione
-        int fd = accept(sock, (struct sockaddr *)&client_addr, &client_len);
-
+        //accetto la connessione di player1
+        int fd1 = accept(sock, (struct sockaddr *)&client_addr, &client_len);
+        coppiaLoc.FD_Player1 = fd1;
+        fprintf(stderr,"Player 1 connesso, attendo l'avversario..");
         
-        if (counter % 2 == 0)
-        {   
-            //player 1
-            coppiaLoc.FD_Player1 = fd;
-        }
-        else
-        {   
-            //player 2
+        int fd2 = accept(sock, (struct sockaddr *)&client_addr, &client_len);
+        coppiaLoc.FD_Player2 = fd2;
+        fprintf(stderr,"Player 2 connesso, avvio la partita..");
 
-            coppiaLoc.FD_Player2 = fd;
-            //creo il thread (è corretto)
-            pthread_create(&arrayThread[counter], NULL, Partita, (void *)&coppiaLoc);
-        }
-
-        counter++;
-
-        close(fd);
+        pthread_t thread;
+        //è compito del thread gestire le connessioni
+        //lancio la partita
+        pthread_create(&thread, NULL, Partita, (void *)&coppiaLoc);
+        
     }
 }

@@ -1,9 +1,10 @@
 all : server
 
 server : server.o gioco.o
-	clang server.o gioco.o -o server
+	clang -lpthread server.o gioco.o -o server
 server.o : server.c gioco.c headerServer.h headerGioco.h ../common.h
-	clang server.c gioco.c 
+	clang -c -g server.c gioco.c headerServer.h headerGioco.h ../common.h
+
 
 clean :
 	rm -f *.o server 

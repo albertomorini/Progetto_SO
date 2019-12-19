@@ -1,36 +1,60 @@
-#include "headerGioco.h"
-#include "../common.h"
+#include "headerServer.h"
 
 
+void *Partita(void *fd)
+{
 
+    //cast alla struct dove trovo i player
+    t_coppia coppiataLoc = *(struct coppia *)fd;
+    t_partita stato;
+    //genero random le pile
+    stato.PilaA = (2 + rand() % 48);
+    stato.PilaB = (2 + rand() % 48);
+    stato.PID_Vincitore = 0;
+
+    //invia ai due client la struct con lo stato della partita
+    send(coppiataLoc.FD_Player1, &stato, sizeof(t_partita), 0);
+    send(coppiataLoc.FD_Player2, &stato, sizeof(t_partita), 0);
+
+    return NULL;
+}
+
+int controllaConnessioneGiocatori(){
+    //utile solo per riuscire a compilare
+    return 1;
+}
 
 int creaGioco(int Player1, int Player2)
 {
-    //srand(time(NULL)); // Initialization, should only be called once.
+    srand(time(NULL)); // Initialization, should only be called once.
     //Da 2 a 50 pedine.. 1 pedina rappresenterebbe la vincita certa dell'avversario
     //partita.PilaA = 2 + rand() % 50;
     //partita.PilaB = 2 + rand() % 50;
-    partita.PID_Vincitore = 0;
+    t_partita stato;
+    stato.PID_Vincitore = 0;
    
 
     //TODO: impostare una guardia aggiuntiva->il gioco continua finché entrambi i client sono connessi
-    while (partita.PID_Vincitore == 0 && controllaConnessioneGiocatori()==1 )
+    while (stato.PID_Vincitore == 0 && controllaConnessioneGiocatori()==1 )
     { 
-        aggiornaStatoPartita();//aggiorna i due client dello stato della partita
+        //TODO:implementare aggiorna stato partita
+        //aggiornaStatoPartita();//aggiorna i due client dello stato della partita
 
         //TODO: adattare e passare parametri, tipo socket
-        riceviDaClient(Player1); //attende la risposta della mossa da player1
+        //TODO: sistemare i parametri della funzione
+        //riceviDaClient(Player1); //attende la risposta della mossa da player1
         
         //se l'azione compiuta dal player è corretta allora aggiorno lo stato della partita 
-        aggiornaStatoPartita();
+        //aggiornaStatoPartita();
 
         //Se il player1 non ha vinto con la mossa, turno player 2
-        if (partita.PID_Vincitore == 0){
+        if (stato.PID_Vincitore == 0){
             //comunica con il player2: informa sullo stato partita
-            riceviDaClient(Player2);
+            //TODO: sistemare il passaggio dei parametri della funzione
+            //riceviDaClient(Player2);
 
             //se l'azione compiuta dal player è corretta allora aggiorno lo stato della partita 
-            aggiornaStatoPartita();
+            //aggiornaStatoPartita();
         }
 
 
@@ -38,10 +62,13 @@ int creaGioco(int Player1, int Player2)
     return 1;
 }
  
-
-void riceviDaClient(int PIDplayer)
+/*
+    stato : contiene lo stato corrente della partita
+    azione : contiene l'azione appena ricevuta dal client
+*/
+t_partita riceviDaClient(t_partita stato, t_scelta azione, int PIDplayer)
 {
-    scelta.status = 1;
+    azione.status = 1;
      //se "-1", mossa non valida
     //Avviene un doppio controllo, il primo se la pila scelta è valida
     //Il secondo se il numero di pedine da rimuovere è valido, nel caso Falso torna -1 e richiedo al client
@@ -49,33 +76,34 @@ void riceviDaClient(int PIDplayer)
     do{
         //riceve struct da inserire nella struct "scelta"
 
-        if (scelta.Pila == 'A')
+        if (azione.Pila == 'A')
         {
-            scelta.status = checkRimozione(partita.PilaA, scelta.numPedine);
+            azione.status = checkRimozione(stato.PilaA, azione.numPedine);
         }
-        else if (scelta.Pila == 'B')
+        else if (azione.Pila == 'B')
         {
-            scelta.status = checkRimozione(partita.PilaB, scelta.numPedine);
+            azione.status = checkRimozione(stato.PilaB, azione.numPedine);
         }
         else
         {
-            scelta.status = 1;
+            azione.status = 1;
             char errore[100] = "Errore, Pila errata o numero di pedine sbagliato";
             //send errore to client
         }
-    } while (scelta.status == 1); //finché scelta non valida
+    } while (azione.status == 1); //finché scelta non valida
 
 
     //Rimuovo pedine dalla pila scelta
-    if (scelta.Pila == 'A')
+    if (azione.Pila == 'A')
     {
-        partita.PilaA -= scelta.numPedine;
+        stato.PilaA -= azione.numPedine;
     }
-    else if (scelta.Pila == 'B')
+    else if (azione.Pila == 'B')
     {
-        partita.PilaB -= scelta.numPedine;
+        stato.PilaB -= azione.numPedine;
     }
-    checkVittoria(PIDplayer);
+    //checkVittoria(PIDplayer);
+    return stato;
 }
 
 int checkRimozione(int Pila, int numPedine)
@@ -86,7 +114,8 @@ int checkRimozione(int Pila, int numPedine)
     }
     return 1;
 }
-
+/*
+//TODO:passare struct stato partita alle due funzioni sotto
 void checkVittoria(int PID_player){
     if (partita.PilaA == 0 && partita.PilaB == 0)
     {
@@ -100,10 +129,4 @@ void printPile()
     printf("stato partita:\n");
     printf("Pila A: %d \n Pila B: %d \n", partita.PilaA, partita.PilaB);
 }
-
-int main(int argc, char const *argv[])
-{   
-    partita.PilaA=29;
-    printf("%d",partita.PilaA);
-    return 0;
-}
+*/

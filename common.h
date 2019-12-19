@@ -4,17 +4,23 @@
 #define SOCKADDR "/tmp/upperserver.socket"
 
 
-struct partitaGioco
+typedef struct partitaGioco
 {
     int PilaA;
     int PilaB;
     int PID_Vincitore;
 
-} partita;
+}t_partita;
 
-struct scelta
+typedef struct scelta
 {
     char Pila;
     int numPedine;
     int status;
-} scelta;
+}t_scelta;
+
+typedef struct coppia
+{
+    int FD_Player1;
+    int FD_Player2;
+}t_coppia;
