@@ -37,3 +37,10 @@ typedef struct coppia
     int FD_Player2;
 }t_coppia;
 
+#define TRUE 0
+#define FALSE 1
+
+//Idk, che dici?
+#define PILA_ERR 3
+#define PEDINE_ERR 4
+#define CONNESSIONE_ON 5

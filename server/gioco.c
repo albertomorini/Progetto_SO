@@ -1,6 +1,5 @@
 #include "headerServer.h"
 
-
 void *creaPartita(void *fd)
 {
     gestioneGioco(fd);
@@ -10,62 +9,45 @@ void *creaPartita(void *fd)
 void gestioneGioco(void *fd)
 {
     //cast alla struct dove trovo i player
-    t_coppia Players = *(t_coppia *) fd;
-    t_partita stato; 
+    t_coppia Players = *(t_coppia *)fd;
+    t_partita stato;
 
     //genero random le pile
     stato.PilaA = (2 + rand() % 48);
     stato.PilaB = (2 + rand() % 48);
     stato.PID_Vincitore = 0;
 
-    inviaMessaggio(Players.FD_Player1,"Benvenuto nel NIM Server!");
-    inviaMessaggio(Players.FD_Player2,"Benvenuto nel NIM Server!");
+    inviaMessaggio(Players.FD_Player1, "Benvenuto nel NIM Server!");
+    inviaMessaggio(Players.FD_Player2, "Benvenuto nel NIM Server!");
 
-    aggiornaStatoPartita(stato,&Players);
+    while ( (checkVittoria(stato) == FALSE) && stato.PID_Vincitore==0)
+    {
+        aggiornaStatoPartita(stato, &Players);
+        //controllo connessione P1 -> se non c'è 
+        //vittore all'altro giocatore
+        stato = riceviAzione(stato, Players.FD_Player1);
+        aggiornaStatoPartita(stato, &Players);
+        //ceckVittoria(stato) -> se ha vinto stato.PID_Vincitore=Players.FD_Player1
 
-    stato=riceviAzione(stato,Players.FD_Player1);
-    aggiornaStatoPartita(stato,&Players);
+        //controllo connessione P2
+        stato = riceviAzione(stato, Players.FD_Player2);
+        aggiornaStatoPartita(stato, &Players);
+        //ceckVittoria(stato) -> se ha vinto stato.PID_Vincitore=Players.FD_Player1
+    }
 
-    stato=riceviAzione(stato,Players.FD_Player2);
-    aggiornaStatoPartita(stato,&Players);
-
-    /*
-    //TODO: impostare una guardia aggiuntiva->il gioco continua finché entrambi i client sono connessi
-    while (stato.PID_Vincitore == 0 && controllaConnessioneGiocatori()==1 )
-    { 
-        //TODO:implementare aggiorna stato partita
-        //aggiornaStatoPartita();//aggiorna i due client dello stato della partita
-
-        //TODO: adattare e passare parametri, tipo socket
-        //TODO: sistemare i parametri della funzione
-        //riceviDaClient(Player1); //attende la risposta della mossa da player1
-        
-        //se l'azione compiuta dal player è corretta allora aggiorno lo stato della partita 
-        //aggiornaStatoPartita();
-
-        //Se il player1 non ha vinto con la mossa, turno player 2
-        if (stato.PID_Vincitore == 0){
-            //comunica con il player2: informa sullo stato partita
-            //TODO: sistemare il passaggio dei parametri della funzione
-            //riceviDaClient(Player2);
-
-            //se l'azione compiuta dal player è corretta allora aggiorno lo stato della partita 
-            //aggiornaStatoPartita();
-        }
-
-
-    }*/
 }
 
-void aggiornaStatoPartita( t_partita stato,t_coppia *fd){
+void aggiornaStatoPartita(t_partita stato, t_coppia *fd)
+{
     send(fd->FD_Player1, &stato, sizeof(t_partita), 0);
     send(fd->FD_Player2, &stato, sizeof(t_partita), 0);
 }
 
-void inviaMessaggio(int fd,char *msg){ 
-    int lunghezza=strlen(msg);
-    send(fd,&lunghezza,sizeof(int),0);
-    send(fd,&msg,sizeof(char)*strlen(msg),0);
+void inviaMessaggio(int fd, char *msg)
+{
+    int lunghezza = strlen(msg);
+    send(fd, &lunghezza, sizeof(int), 0);
+    send(fd, &msg, sizeof(char) * strlen(msg), 0);
 }
 
 /*
@@ -77,43 +59,58 @@ t_partita riceviAzione(t_partita stato, int player)
 {
 
     t_scelta azione;
-    recv(player,&azione,sizeof(t_scelta),0);
-    fprintf(stderr,"Azione del client-> \nPILA:%c\nnumPedine:%d",azione.Pila,azione.numPedine);
+    recv(player, &azione, sizeof(t_scelta), 0);
+    fprintf(stderr, "Azione del client-> \nPILA:%c\nnumPedine:%d", azione.Pila, azione.numPedine);
 
-    
-    //se "-1", mossa non valida
-    //Avviene un doppio controllo, il primo se la pila scelta è valida
-    //Il secondo se il numero di pedine da rimuovere è valido, nel caso Falso torna -1 e richiedo al client
-    //riceve struct da inserire nella struct "scelta"
-
-    if (azione.Pila == 'A')
+    /* 
+    Se azione.Pila è corretta(='A','B') e il numero di pedine è corretto
+    segue la correttezza di checkRimozione
+    allora rimuovo le pedine e imposto lo stato azione come positivo
+    altrimenti identifico l'errore e lo comunico al client con "-1"
+    */
+    if (azione.Pila == 'A' && checkRimozione(stato.PilaA, azione.numPedine) == TRUE)
     {
-        azione.status = checkRimozione(stato.PilaA, azione.numPedine);
+        azione.status = 0;
+        stato.PilaA -= azione.numPedine;
     }
-    else if (azione.Pila == 'B')
+    else if (azione.Pila == 'B' && checkRimozione(stato.PilaB, azione.numPedine) == TRUE)
     {
-        azione.status = checkRimozione(stato.PilaB, azione.numPedine);
+        azione.status = 0;
+        stato.PilaB -= azione.numPedine;
     }
     else
     {
+        //TODO: inserire le stringhe di errore segnate come commenti ora
+        //Dentro una variabile che verrà mandata al client
+        //String strErrore='';
+        if (azione.Pila != 'A' || azione.Pila != 'B')
+        {
+            //strErrore +=ERRORE PILA INESISTENTE
+        }
+        else
+        {
+            //strErrore += ERRORE NUMERO PEDINE SBAGLIATO
+        }
         azione.status = 1;
-        char errore[100] = "Errore, Pila errata o numero di pedine sbagliato";
-        fprintf(stderr,"ERRORE");
-        //send errore to client
+        fprintf(stderr, "ERRORE");
     }
+    //send azione.status to client, se 0 ok 1 dovrà riprovare
 
+    //TODO: Gestione enumerativi, io pensavo di comunicare al client un vettore di caratteri con l'errore.. Tu come pensavi?
+    //Guarda common.h
 
-    //Rimuovo pedine dalla pila scelta
-    if (azione.Pila == 'A')
+    if (azione.status == 1)
     {
-        stato.PilaA -= azione.numPedine;
+        //send anche il messaggio di errore al client
+        //send in questo punto del codice in quanto il client sa già
+        //che c'è stato un errore e così sarà pronto a ricevere la stringa d'errore
+        //send strErrore
+        return riceviAzione(stato, player);
     }
-    else if (azione.Pila == 'B')
+    else
     {
-        stato.PilaB -= azione.numPedine;
+        return stato;
     }
-    //checkVittoria(PIDplayer);*/
-    return stato;
 }
 
 int checkRimozione(int Pila, int numPedine)
@@ -125,19 +122,18 @@ int checkRimozione(int Pila, int numPedine)
     return 1;
 }
 
-
 //TODO:da implementare
-int controllaConnessioneGiocatori(){
+int controllaConnessioneGiocatori()
+{
     //utile solo per riuscire a compilare
     return 1;
 }
 
-/*
-//TODO:passare struct stato partita alle due funzioni sotto
-void checkVittoria(int PID_player){
-    if (partita.PilaA == 0 && partita.PilaB == 0)
+int checkVittoria(t_partita stato)
+{
+    if (stato.PilaA == 0 && stato.PilaB == 0)
     {
-        partita.PID_Vincitore = PID_player;
-       
+        return 0;
     }
-}*/
+    return 1;
+}

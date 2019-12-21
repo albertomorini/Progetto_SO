@@ -60,9 +60,9 @@ int checkRimozione(int Pila, int numPedine);
 void printPile();
 
 /**
- * Se le pile sono entrambe vuote(==0, non <0) assegno la vittoria al PID passato come parametro
+ return 0 if PilaA == 0 && PilaB == 0, altrimenti 1
  */
-void checkVittoria(int PIDplayer);
+int checkVittoria(t_partita stato);
 
 /*
     Controlla che i giocatori siano online
