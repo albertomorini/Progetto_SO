@@ -2,14 +2,19 @@
 
 void *creaPartita(void *fd)
 {
-    gestioneGioco(fd);
+    gestioneGioco((int *)fd);
     return NULL;
 }
 
-void gestioneGioco(void *fd)
+void gestioneGioco(int *fd)
 {
-    //cast alla struct dove trovo i player
-    t_coppia Players = *(t_coppia *)fd;
+    //dove sono memorizzati gli fd dei giocatori
+    t_coppia Players;
+    Players.FD_Player1=*fd;
+    Players.FD_Player2=*(fd+1);
+    //FIN QUI CORRETTO!
+
+    //dove è memorizzato lo stato della partita
     t_partita stato;
 
     //genero random le pile
@@ -17,37 +22,25 @@ void gestioneGioco(void *fd)
     stato.PilaB = (2 + rand() % 48);
     stato.PID_Vincitore = 0;
 
-    inviaMessaggio(Players.FD_Player1, "Benvenuto nel NIM Server!");
-    inviaMessaggio(Players.FD_Player2, "Benvenuto nel NIM Server!");
-
-    while ( (checkVittoria(stato) == FALSE) && stato.PID_Vincitore==0)
-    {
-        aggiornaStatoPartita(stato, &Players);
+    //while ( (checkVittoria(stato) == FALSE) && stato.PID_Vincitore==0)
+    //{
+        aggiornaStatoPartita(stato, Players);
         //controllo connessione P1 -> se non c'è 
         //vittore all'altro giocatore
-        stato = riceviAzione(stato, Players.FD_Player1);
-        aggiornaStatoPartita(stato, &Players);
         //ceckVittoria(stato) -> se ha vinto stato.PID_Vincitore=Players.FD_Player1
 
-        //controllo connessione P2
-        stato = riceviAzione(stato, Players.FD_Player2);
-        aggiornaStatoPartita(stato, &Players);
+        
         //ceckVittoria(stato) -> se ha vinto stato.PID_Vincitore=Players.FD_Player1
-    }
+    //}
 
 }
 
-void aggiornaStatoPartita(t_partita stato, t_coppia *fd)
+void aggiornaStatoPartita(t_partita stato, t_coppia fd)
 {
-    send(fd->FD_Player1, &stato, sizeof(t_partita), 0);
-    send(fd->FD_Player2, &stato, sizeof(t_partita), 0);
-}
-
-void inviaMessaggio(int fd, char *msg)
-{
-    int lunghezza = strlen(msg);
-    send(fd, &lunghezza, sizeof(int), 0);
-    send(fd, &msg, sizeof(char) * strlen(msg), 0);
+    //INVIO NUMERO PER PROVA MA LA COMUNICAZIONE CLIENT/SERVER NON FUNZIONA
+    int numero=14;
+    send(fd.FD_Player1,&numero, sizeof(int), 0);
+    send(fd.FD_Player2, &numero, sizeof(int), 0);
 }
 
 /*

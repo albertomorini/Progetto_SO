@@ -35,16 +35,14 @@ int main()
         socklen_t client_len = sizeof(client_addr);
 
         //contiene la coppia di file descriptor
-        t_coppia Players; 
+        int *fd; 
 
         //accetto la connessione di player1
-        int fd1 = accept(sock, (struct sockaddr *)&client_addr, &client_len);
-        Players.FD_Player1 = fd1;
+        *fd = accept(sock, (struct sockaddr *)&client_addr, &client_len);
         fprintf(stderr,"Player 1 connesso, attendo l'avversario..\n");
         
         //accetto la connessione del player2
-        int fd2 = accept(sock, (struct sockaddr *)&client_addr, &client_len);
-        Players.FD_Player2 = fd2;
+        *(fd+1) = accept(sock, (struct sockaddr *)&client_addr, &client_len);
         fprintf(stderr,"\nPlayer 2 connesso, avvio la partita..\n");
 
 
@@ -52,10 +50,10 @@ int main()
         pthread_t thread;
         
         //lancio la partita
-        pthread_create(&thread, NULL, creaPartita, (void *)&Players);
+        pthread_create(&thread, NULL, creaPartita, fd);
         
-        //Chiudo le socket
-        close(fd1);
-        close(fd2);
+        //ATTENZIONE: Non ha senso chiudere le socket qui, perchè?
+        //close(fd1);
+        //close(fd2);
     }
 }

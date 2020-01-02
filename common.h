@@ -2,6 +2,9 @@
 
 //indirizzo dove verrà salvato il file temporaneo per la comunicazione socket
 #define SOCKADDR "/tmp/upperserver.socket"
+#include <sys/types.h>
+#include <signal.h>
+#include <sys/socket.h>
 
 /**
  * Struct utilizzata per salvare la mossa del player che verrà 

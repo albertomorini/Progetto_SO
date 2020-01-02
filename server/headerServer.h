@@ -24,7 +24,7 @@ void *creaPartita(void *fd);
  * Crea un numero random di pedine per ogni pila(2)
  * Interagisce col client
  */
-void gestioneGioco(void *fd);
+void gestioneGioco(int *fd);
 
 
 t_partita riceviAzione(t_partita stato, int player);
@@ -33,7 +33,7 @@ t_partita riceviAzione(t_partita stato, int player);
 /*
     Invia gli aggiornamenti della partita ai due client
 */
-void aggiornaStatoPartita(t_partita stato,t_coppia *fd);
+void aggiornaStatoPartita(t_partita stato, t_coppia fd);
 
 /*
     Invia messaggi ai client
