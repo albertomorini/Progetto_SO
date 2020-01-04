@@ -60,6 +60,11 @@ int checkRimozione(int Pila, int numPedine);
 void printPile();
 
 /**
+ * comunica ad entrambi i client il numero assegnato a loro dal server
+ */
+void inviaInfo();
+
+/**
  return 0 if PilaA == 0 && PilaB == 0, altrimenti 1
  */
 int checkVittoria(t_partita stato);

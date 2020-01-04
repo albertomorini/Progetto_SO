@@ -15,7 +15,7 @@ typedef struct partitaGioco
     int PilaA;
     int PilaB;
     int PID_Vincitore;
-
+    int Turno;
 }t_partita;
 
 /**
@@ -42,6 +42,10 @@ typedef struct coppia
 
 #define TRUE 0
 #define FALSE 1
+
+//definisce i giocatori
+#define PLAYER1 1
+#define PLAYER2 2
 
 //Idk, che dici?
 #define PILA_ERR 3

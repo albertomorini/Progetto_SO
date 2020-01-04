@@ -12,7 +12,9 @@ void gestioneGioco(int *fd)
     t_coppia Players;
     Players.FD_Player1=*fd;
     Players.FD_Player2=*(fd+1);
-    //FIN QUI CORRETTO!
+
+    //comunica ad entrambi i client quale numero gli è stato assegnato dal server
+    inviaInfo(Players);
 
     //dove è memorizzato lo stato della partita
     t_partita stato;
@@ -21,26 +23,38 @@ void gestioneGioco(int *fd)
     stato.PilaA = (2 + rand() % 48);
     stato.PilaB = (2 + rand() % 48);
     stato.PID_Vincitore = 0;
+    stato.Turno=PLAYER1;
 
-    //while ( (checkVittoria(stato) == FALSE) && stato.PID_Vincitore==0)
-    //{
+
+    while (stato.PID_Vincitore==0)
+    {
         aggiornaStatoPartita(stato, Players);
-        //controllo connessione P1 -> se non c'è 
-        //vittore all'altro giocatore
-        //ceckVittoria(stato) -> se ha vinto stato.PID_Vincitore=Players.FD_Player1
-
         
-        //ceckVittoria(stato) -> se ha vinto stato.PID_Vincitore=Players.FD_Player1
-    //}
+        //TODO:da controllare e sistemare il metodo riceviAzione();
+        if(stato.Turno==PLAYER1){
+            //riceviAzione(stato,Players.FD_Player1);
+            }
+        else{
+            //riceviAzione(stato,Players.FD_Player1);
+        }
+    }
 
 }
 
-void aggiornaStatoPartita(t_partita stato, t_coppia fd)
+void inviaInfo(t_coppia Players){
+    int numeroAssegnato;
+
+    numeroAssegnato=PLAYER1;
+    send(Players.FD_Player1, &numeroAssegnato, sizeof(int), 0);
+
+    numeroAssegnato=PLAYER2;
+    send(Players.FD_Player2, &numeroAssegnato, sizeof(int), 0);
+}
+
+void aggiornaStatoPartita(t_partita stato, t_coppia Players)
 {
-    //INVIO NUMERO PER PROVA MA LA COMUNICAZIONE CLIENT/SERVER NON FUNZIONA
-    int numero=14;
-    send(fd.FD_Player1,&numero, sizeof(int), 0);
-    send(fd.FD_Player2, &numero, sizeof(int), 0);
+    send(Players.FD_Player1, &stato, sizeof(t_partita), 0);
+    send(Players.FD_Player2, &stato, sizeof(t_partita), 0);
 }
 
 /*

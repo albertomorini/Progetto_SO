@@ -1,6 +1,5 @@
 #include "headerClient.h"
 
-
 int main()
 {   
     //Avvio i segnali
@@ -15,7 +14,7 @@ int main()
     signal(SIGSTOP, avvisaUscita);
 
     //impostazione del socket locale
-    int sock = socket(AF_LOCAL, SOCK_STREAM, 0);
+    int server = socket(AF_LOCAL, SOCK_STREAM, 0);
     
     //contiene lo stato corrente della partita
     t_partita stato;
@@ -25,22 +24,27 @@ int main()
 
     //casting obbligatorio dell'indirizzo del client
     //(const struct sockaddr *)&addr
-    int server = connect(sock, (const struct sockaddr *)&addr, client_len);
-
-    //riceviMessaggio(server);
+    connect(server, (const struct sockaddr *)&addr, client_len);
+    
+    //riceve il numero di giocatore assegnato dal server
+    int temp;
+    recv(server,&temp, sizeof(int), 0);
+    const int numeroAssegnato=temp;
+    printf("Tu sei il giocatore %d\n",numeroAssegnato);
 
     //while(1){
         //riceve lo stato della partita
-        void * buf;
-        int res=recv(server,(void *) &buf, sizeof(int), 0);
-        printf("%d",res);
+        int res=recv(server,&stato, sizeof(t_partita), 0);
+        stampaStato(stato);
+        while(stato.Turno!=numeroAssegnato){
+            printf("Aspetta, non è ancora il tuo turno;\n");
+            fflush(stdout);
+            sleep(2);
+            }
         //invia l'azione al server
-        /*t_scelta azione=prendiInput();
+        t_scelta azione=prendiInput();
         send(server,&azione, sizeof(t_scelta),0);
-        */
     //}
-
-    
     return 0;
 }
 
@@ -52,6 +56,12 @@ t_scelta prendiInput()
     printf("Indica il numero di pedine: ");
     scanf("%d",&azione.numPedine);
     return azione;
+}
+
+void stampaStato(t_partita stato){
+    printf("Ora è il turno del giocatore %d\n",stato.Turno);
+    printf("PILA A : %d\n",stato.PilaA);
+    printf("PILA B : %d\n",stato.PilaB);
 }
 
 void avvisaUscita()

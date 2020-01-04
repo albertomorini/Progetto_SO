@@ -45,7 +45,6 @@ int main()
         *(fd+1) = accept(sock, (struct sockaddr *)&client_addr, &client_len);
         fprintf(stderr,"\nPlayer 2 connesso, avvio la partita..\n");
 
-
         //instanzio il thread che lancerà la procedura di partita
         pthread_t thread;
         
