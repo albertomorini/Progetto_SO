@@ -106,16 +106,21 @@ t_scelta prendiInput()
 {
     t_scelta azione;
     //Pila
-    printf("Scegli la pila:");
+    printf("Scegli la pila: ");
     scanf("%c",&azione.Pila);
     printf("\n");
     getchar();
 
     //Num pedine
-    printf("Indica il numero di pedine:");
-    scanf("%d", &azione.numPedine);
-    printf("\n");
-    getchar();
+    printf("Indica il numero di pedine: ");
+    if(scanf("%d", &azione.numPedine)==1){
+        printf("\n");
+        getchar();
+    }else{
+        getchar();
+        getchar();
+    }
+
     return azione;
 }
 
