@@ -20,10 +20,17 @@ const struct sockaddr_un addr = {
   .sun_path = SOCKADDR
 };
 
+/*
+Si occupa di prendere l'input da tastiera dell'utente.
+Quindi la scelta della Pila e il numero di pedine.
+*/
 t_scelta prendiInput();
 
-//stampa lo stato della partita
-void stampaStato(t_partita stato);
+//pulisce il terminale
+void clearScreen();
+
+//Stampa lo stato della partita, quindi il numero di pedine correnti nelle pile
+void stampaStato(int numeroAssegnato,t_partita stato);
 
 //riceve lo stato della partita dal server
 t_partita riceviStato(int server);
@@ -36,3 +43,10 @@ void stampaErrore(int statusAzione);
 
 //Se un segnale viene eseguito, viene invocata la procedura avvisaUscita che si occuperà di avvisare il server
 void avvisaUscita();
+
+//Si occupa di ricevere dal server l'esito della scelta inviata da client
+//Inoltre traduce anche a video l'errore nel caso la mossa sia scorretta.
+int isMossaValida(int server);
+
+//stampa l'esito finale della partita
+void esitoPartita(int numeroAssegnato,t_partita stato);

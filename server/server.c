@@ -43,7 +43,7 @@ int main()
         
         //accetto la connessione del player2
         *(fd+1) = accept(sock, (struct sockaddr *)&client_addr, &client_len);
-        fprintf(stderr,"\nPlayer 2 connesso, avvio la partita..\n");
+        fprintf(stderr,"\nPlayer 2 connesso, avvio la partita..\n-------------------------\n");
 
         //instanzio il thread che lancerà la procedura di partita
         pthread_t thread;
@@ -51,8 +51,5 @@ int main()
         //lancio la partita
         pthread_create(&thread, NULL, creaPartita, fd);
         
-        //ATTENZIONE: Non ha senso chiudere le socket qui, perchè?
-        //close(fd1);
-        //close(fd2);
     }
 }
