@@ -31,21 +31,48 @@ int main()
     recv(server,&temp, sizeof(int), 0);
     const int numeroAssegnato=temp;
     printf("Tu sei il giocatore %d\n",numeroAssegnato);
+    //riceve lo stato iniziale della partita
+    stato=riceviStato(server);
+    stampaStato(stato);
 
-    //while(1){
-        //riceve lo stato della partita
-        int res=recv(server,&stato, sizeof(t_partita), 0);
-        stampaStato(stato);
+    while(stato.Vincitore==NESSUNO){       
         while(stato.Turno!=numeroAssegnato){
             printf("Aspetta, non è ancora il tuo turno;\n");
             fflush(stdout);
-            sleep(2);
+            sleep(5);
             }
+        //riceve lo stato dopo la modifica dell'altro giocatore
+        stato=riceviStato(server);
+        stampaStato(stato);
         //invia l'azione al server
-        t_scelta azione=prendiInput();
-        send(server,&azione, sizeof(t_scelta),0);
-    //}
-    return 0;
+        int statusAzione=OK;
+        do{
+            t_scelta azione=prendiInput();
+            send(server,&azione, sizeof(t_scelta),0);
+
+            recv(server,&statusAzione,sizeof(int),0);
+            if(statusAzione!=OK){
+                stampaErrore(statusAzione);
+            }
+
+        }while(statusAzione!=OK);
+        printf("\n");
+    }
+        
+}
+
+void stampaErrore(int statusAzione){
+    switch (statusAzione)
+    {
+    case ERR_PEDINE:
+        printf("ERRORE: inserire un numero di pedine corretto\n");
+        break;
+    case ERR_PILA:
+        printf("ERRORE: selezionare la pila corretta\n");
+        break;
+    default:
+        break;
+    }
 }
 
 t_scelta prendiInput()
@@ -56,6 +83,12 @@ t_scelta prendiInput()
     printf("Indica il numero di pedine: ");
     scanf("%d",&azione.numPedine);
     return azione;
+}
+
+t_partita riceviStato(int server){
+    t_partita stato;
+    int res=recv(server,&stato, sizeof(t_partita), 0);
+    return stato;
 }
 
 void stampaStato(t_partita stato){

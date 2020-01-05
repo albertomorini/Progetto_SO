@@ -22,10 +22,17 @@ const struct sockaddr_un addr = {
 
 t_scelta prendiInput();
 
+//stampa lo stato della partita
 void stampaStato(t_partita stato);
+
+//riceve lo stato della partita dal server
+t_partita riceviStato(int server);
 
 //Comunica con l'utente per sapere la pila e il numero di pedine
 void aggiornaStato();
+
+//stampa l'errore relativo allo status
+void stampaErrore(int statusAzione);
 
 //Se un segnale viene eseguito, viene invocata la procedura avvisaUscita che si occuperà di avvisare il server
 void avvisaUscita();

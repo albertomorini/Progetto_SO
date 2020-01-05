@@ -52,7 +52,10 @@ void inviaMessaggio(int fd,char *msg);
  * @param Pila è la Pila slezionata
  * @param numPedine numero pedine da togliere (<= Pila per aver successo)
  */
-int checkRimozione(int Pila, int numPedine);
+int controllaRimozione(int Pila, int numPedine);
+
+//invia lo stato ad un giocatore specifico
+void inviaStatoPartita(t_partita stato, int player);
 
 /**
  * stampa su terminale le pile della struct Partita

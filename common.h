@@ -14,7 +14,7 @@ typedef struct partitaGioco
 {
     int PilaA;
     int PilaB;
-    int PID_Vincitore;
+    int Vincitore;
     int Turno;
 }t_partita;
 
@@ -26,7 +26,6 @@ typedef struct scelta
 {
     char Pila;
     int numPedine;
-    int status;
 }t_scelta;
 
 /**
@@ -44,10 +43,13 @@ typedef struct coppia
 #define FALSE 1
 
 //definisce i giocatori
+#define NESSUNO 0
 #define PLAYER1 1
 #define PLAYER2 2
 
-//Idk, che dici?
-#define PILA_ERR 3
-#define PEDINE_ERR 4
-#define CONNESSIONE_ON 5
+//definisce le tipologie di errore
+#define OK 0
+#define ERRORE 1
+#define ERR_PILA 2
+#define ERR_PEDINE 3
+#define CONNESSIONE_ON 9

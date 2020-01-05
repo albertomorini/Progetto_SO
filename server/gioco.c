@@ -22,21 +22,32 @@ void gestioneGioco(int *fd)
     //genero random le pile
     stato.PilaA = (2 + rand() % 48);
     stato.PilaB = (2 + rand() % 48);
-    stato.PID_Vincitore = 0;
+    stato.Vincitore = NESSUNO;
     stato.Turno=PLAYER1;
 
+    //invia stato partita INIZIALE
+    aggiornaStatoPartita(stato, Players);
 
-    while (stato.PID_Vincitore==0)
+    while (stato.Vincitore==NESSUNO)
     {
-        aggiornaStatoPartita(stato, Players);
-        
-        //TODO:da controllare e sistemare il metodo riceviAzione();
-        if(stato.Turno==PLAYER1){
-            //riceviAzione(stato,Players.FD_Player1);
-            }
-        else{
-            //riceviAzione(stato,Players.FD_Player1);
+        switch (stato.Turno)
+        {
+            case PLAYER1:
+                inviaStatoPartita(stato,Players.FD_Player1);
+                stato=riceviAzione(stato,Players.FD_Player1);
+                inviaStatoPartita(stato,Players.FD_Player2);
+            break;
+
+            case PLAYER2:
+                inviaStatoPartita(stato,Players.FD_Player2);
+                stato=riceviAzione(stato,Players.FD_Player2);
+                inviaStatoPartita(stato,Players.FD_Player1);
+            break;
+
+            default:
+                break;
         }
+        aggiornaStatoPartita(stato, Players);
     }
 
 }
@@ -51,23 +62,23 @@ void inviaInfo(t_coppia Players){
     send(Players.FD_Player2, &numeroAssegnato, sizeof(int), 0);
 }
 
+void inviaStatoPartita(t_partita stato, int player){
+    send(player, &stato, sizeof(t_partita), 0);
+}
+
 void aggiornaStatoPartita(t_partita stato, t_coppia Players)
 {
     send(Players.FD_Player1, &stato, sizeof(t_partita), 0);
     send(Players.FD_Player2, &stato, sizeof(t_partita), 0);
 }
 
-/*
-    stato : contiene lo stato corrente della partita
-    azione : contiene l'azione appena ricevuta dal client
-    player : contiene il file descriptor del giocatore che compie l'azione
-*/
 t_partita riceviAzione(t_partita stato, int player)
 {
-
     t_scelta azione;
     recv(player, &azione, sizeof(t_scelta), 0);
-    fprintf(stderr, "Azione del client-> \nPILA:%c\nnumPedine:%d", azione.Pila, azione.numPedine);
+
+    //indica lo stato dell'azione
+    int statusAzione=OK;
 
     /* 
     Se azione.Pila è corretta(='A','B') e il numero di pedine è corretto
@@ -75,43 +86,30 @@ t_partita riceviAzione(t_partita stato, int player)
     allora rimuovo le pedine e imposto lo stato azione come positivo
     altrimenti identifico l'errore e lo comunico al client con "-1"
     */
-    if (azione.Pila == 'A' && checkRimozione(stato.PilaA, azione.numPedine) == TRUE)
+    if (azione.Pila == 'A' && controllaRimozione(stato.PilaA, azione.numPedine) == TRUE)
     {
-        azione.status = 0;
         stato.PilaA -= azione.numPedine;
     }
-    else if (azione.Pila == 'B' && checkRimozione(stato.PilaB, azione.numPedine) == TRUE)
+    else if (azione.Pila == 'B' && controllaRimozione(stato.PilaB, azione.numPedine) == TRUE)
     {
-        azione.status = 0;
         stato.PilaB -= azione.numPedine;
     }
     else
     {
-        //TODO: inserire le stringhe di errore segnate come commenti ora
-        //Dentro una variabile che verrà mandata al client
-        //String strErrore='';
         if (azione.Pila != 'A' || azione.Pila != 'B')
         {
-            //strErrore +=ERRORE PILA INESISTENTE
+            statusAzione=ERR_PILA;
         }
         else
         {
-            //strErrore += ERRORE NUMERO PEDINE SBAGLIATO
+            statusAzione=ERR_PEDINE;
         }
-        azione.status = 1;
-        fprintf(stderr, "ERRORE");
     }
-    //send azione.status to client, se 0 ok 1 dovrà riprovare
 
-    //TODO: Gestione enumerativi, io pensavo di comunicare al client un vettore di caratteri con l'errore.. Tu come pensavi?
-    //Guarda common.h
-
-    if (azione.status == 1)
+    //invia il numero di errore al client, poi lui stamperà il messaggio di errore
+    send(player,&statusAzione,sizeof(int),0);
+    if (statusAzione != OK)
     {
-        //send anche il messaggio di errore al client
-        //send in questo punto del codice in quanto il client sa già
-        //che c'è stato un errore e così sarà pronto a ricevere la stringa d'errore
-        //send strErrore
         return riceviAzione(stato, player);
     }
     else
@@ -120,7 +118,7 @@ t_partita riceviAzione(t_partita stato, int player)
     }
 }
 
-int checkRimozione(int Pila, int numPedine)
+int controllaRimozione(int Pila, int numPedine)
 {
     if (numPedine <= Pila && numPedine != 0)
     {
