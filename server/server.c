@@ -51,8 +51,6 @@ int main()
         //lancio la partita
         pthread_create(&thread, NULL, creaPartita, fd);
         
-        //ATTENZIONE: Non ha senso chiudere le socket qui, perchè?
-        //close(fd1);
-        //close(fd2);
+        //TODO: Dove mettiamo i close(fd)? Non li mettiamo?
     }
 }

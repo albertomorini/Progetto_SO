@@ -10,8 +10,8 @@ void gestioneGioco(int *fd)
 {
     //dove sono memorizzati gli fd dei giocatori
     t_coppia Players;
-    Players.FD_Player1=*fd;
-    Players.FD_Player2=*(fd+1);
+    Players.FD_Player1 = *fd;
+    Players.FD_Player2 = *(fd + 1);
 
     //comunica ad entrambi i client quale numero gli è stato assegnato dal server
     inviaInfo(Players);
@@ -23,31 +23,46 @@ void gestioneGioco(int *fd)
     stato.PilaA = (2 + rand() % 48);
     stato.PilaB = (2 + rand() % 48);
     stato.PID_Vincitore = 0;
-    stato.Turno=PLAYER1;
+    //La prima mossa va al primo client connesso
+    stato.Turno = PLAYER1;
 
-
-    while (stato.PID_Vincitore==0)
+    //finché non c'è un vincitore
+    while (stato.PID_Vincitore == 0)
     {
         aggiornaStatoPartita(stato, Players);
-        
-        //TODO:da controllare e sistemare il metodo riceviAzione();
-        if(stato.Turno==PLAYER1){
-            //riceviAzione(stato,Players.FD_Player1);
+
+        if (stato.Turno == PLAYER1)
+        {
+            stato = riceviAzione(stato, Players.FD_Player1);
+            //Se ha vinto, assengo la vittoria
+            if (checkVittoria(stato) == 0)
+            {
+                stato.PID_Vincitore = Players.FD_Player1;
             }
-        else{
-            //riceviAzione(stato,Players.FD_Player1);
+            //turno al secondo giocatore
+            stato.Turno = PLAYER2;
+        }
+        else
+        {
+            stato = riceviAzione(stato, Players.FD_Player2);
+            if (checkVittoria(stato) == 0)
+            {
+                stato.PID_Vincitore = Players.FD_Player2;
+            }
+            stato.Turno = PLAYER1;
         }
     }
 
 }
 
-void inviaInfo(t_coppia Players){
+void inviaInfo(t_coppia Players)
+{
     int numeroAssegnato;
 
-    numeroAssegnato=PLAYER1;
+    numeroAssegnato = PLAYER1;
     send(Players.FD_Player1, &numeroAssegnato, sizeof(int), 0);
 
-    numeroAssegnato=PLAYER2;
+    numeroAssegnato = PLAYER2;
     send(Players.FD_Player2, &numeroAssegnato, sizeof(int), 0);
 }
 
@@ -69,64 +84,57 @@ t_partita riceviAzione(t_partita stato, int player)
     recv(player, &azione, sizeof(t_scelta), 0);
     fprintf(stderr, "Azione del client-> \nPILA:%c\nnumPedine:%d", azione.Pila, azione.numPedine);
 
+    //se pari a 0, l'azione vuol dire che è valida.
+    int flagErrore = 0;
+
     /* 
-    Se azione.Pila è corretta(='A','B') e il numero di pedine è corretto
-    segue la correttezza di checkRimozione
-    allora rimuovo le pedine e imposto lo stato azione come positivo
-    altrimenti identifico l'errore e lo comunico al client con "-1"
+    Se la pila selezionata è corretta e la rimozione è possibile (checkRimozione)
+    rimuovo le pedine, comunico al client il successo e torno lo stato partita aggiornato.
+
+    Altrimenti, comunico al client l'errore e successivamente richiamo la procedura per attendere la "nuova azione
     */
+
+    //TODO: azione.status è inutilizzato, cioè alla fine uso flagErrore
     if (azione.Pila == 'A' && checkRimozione(stato.PilaA, azione.numPedine) == TRUE)
     {
+        //PILA A
         azione.status = 0;
         stato.PilaA -= azione.numPedine;
+        send(player, &flagErrore, sizeof(int), 0);
+        return stato;
     }
     else if (azione.Pila == 'B' && checkRimozione(stato.PilaB, azione.numPedine) == TRUE)
     {
+        //PILA B
         azione.status = 0;
         stato.PilaB -= azione.numPedine;
-    }
-    else
-    {
-        //TODO: inserire le stringhe di errore segnate come commenti ora
-        //Dentro una variabile che verrà mandata al client
-        //String strErrore='';
-        if (azione.Pila != 'A' || azione.Pila != 'B')
-        {
-            //strErrore +=ERRORE PILA INESISTENTE
-        }
-        else
-        {
-            //strErrore += ERRORE NUMERO PEDINE SBAGLIATO
-        }
-        azione.status = 1;
-        fprintf(stderr, "ERRORE");
-    }
-    //send azione.status to client, se 0 ok 1 dovrà riprovare
-
-    //TODO: Gestione enumerativi, io pensavo di comunicare al client un vettore di caratteri con l'errore.. Tu come pensavi?
-    //Guarda common.h
-
-    if (azione.status == 1)
-    {
-        //send anche il messaggio di errore al client
-        //send in questo punto del codice in quanto il client sa già
-        //che c'è stato un errore e così sarà pronto a ricevere la stringa d'errore
-        //send strErrore
-        return riceviAzione(stato, player);
-    }
-    else
-    {
+        send(player, &flagErrore, sizeof(int), 0);
         return stato;
+    }
+    else
+    {   
+        //ZONA DI ERRORE UTENTE
+        //Se siamo in questa sezione il client ha indicato una mossa non valida
+        //L'errore può essere: Pila errata || NumeroPedine non valido
+        if (azione.Pila != 'A' && azione.Pila != 'B')
+        {
+            flagErrore=PILA_ERR;
+        }else{
+            flagErrore=PEDINE_ERR;
+        }
+
+        send(player, &flagErrore, sizeof(int), 0);
+        return riceviAzione(stato, player);
     }
 }
 
-int checkRimozione(int Pila, int numPedine)
+int checkRimozione(int pedinePila, int numPedine)
 {
-    if (numPedine <= Pila && numPedine != 0)
+    if (numPedine <= pedinePila && numPedine != 0)
     {
-        return 0;
+        return TRUE;
     }
-    return 1;
+    return FALSE;
 }
 
 //TODO:da implementare
@@ -140,7 +148,7 @@ int checkVittoria(t_partita stato)
 {
     if (stato.PilaA == 0 && stato.PilaB == 0)
     {
-        return 0;
+        return TRUE;
     }
-    return 1;
+    return FALSE;
 }

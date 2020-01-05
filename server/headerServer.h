@@ -47,16 +47,15 @@ void inviaMessaggio(int fd,char *msg);
  //t_partita riceviDaClient(t_partita stato, t_scelta azione,int PIDplayer);
 
 /**
- * Il numero di pedine non può essere maggiore del numero di pedine in pila o pari a zero
- * 1=FALSE, 0TRUE
+ * @require numero di pedine NON può essere maggiore del numero di pedine in pila o pari a zero
  * @param Pila è la Pila slezionata
  * @param numPedine numero pedine da togliere (<= Pila per aver successo)
+ * @return TRUE se si possono togliere le pedine
  */
 int checkRimozione(int Pila, int numPedine);
 
-/**
- * stampa su terminale le pile della struct Partita
- */
+//stampa su terminale le pile della struct Partita
+//TODO: da implementare? Serve?
 void printPile();
 
 /**
@@ -64,14 +63,10 @@ void printPile();
  */
 void inviaInfo();
 
-/**
- return 0 if PilaA == 0 && PilaB == 0, altrimenti 1
- */
+//ritorna TRUE se entrambe le pile sono vuote, altrimenti FALSE
 int checkVittoria(t_partita stato);
 
-/*
-    Controlla che i giocatori siano online
-*/
+//TODO: da implementare, Controlla che i giocatori siano online
 int controllaConnessioneGiocatori();
 
 

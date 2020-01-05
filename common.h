@@ -33,7 +33,6 @@ typedef struct scelta
  * Struct di supporto che memorizza i FileDescriptor dei client
  * Il server la instanzia e la popola per poi "passarla" al thread che si occuperà di comunicare con i client
 */
-
 typedef struct coppia
 {
     int FD_Player1;
@@ -47,7 +46,8 @@ typedef struct coppia
 #define PLAYER1 1
 #define PLAYER2 2
 
-//Idk, che dici?
+//Definisco i possibili errori delle azioni client
+//Per comodità, in quanto sono comuni sia al server che al client
 #define PILA_ERR 3
 #define PEDINE_ERR 4
-#define CONNESSIONE_ON 5
+

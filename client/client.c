@@ -1,74 +1,116 @@
 #include "headerClient.h"
 
 int main()
-{   
+{
+    //TODO: da implementare meglio.
     //Avvio i segnali
-    signal(SIGINT, avvisaUscita); //CTRL+C
-    //Da provare, uno di questi, penso il "SIGQUIT" è nel caso si chiuda il terminale
-    //da tenere anche SIGKILL e SIGTERM
-    signal(SIGTERM, avvisaUscita);
-    signal(SIGKILL, avvisaUscita);
-    signal(SIGQUIT, avvisaUscita);
-    
-    signal(SIGABRT, avvisaUscita);
-    signal(SIGSTOP, avvisaUscita);
+    // signal(SIGINT, avvisaUscita); //CTRL+C
 
     //impostazione del socket locale
     int server = socket(AF_LOCAL, SOCK_STREAM, 0);
-    
+
     //contiene lo stato corrente della partita
     t_partita stato;
-    
+
     //contiene la lunghezza dell'indirizzo del client
     socklen_t client_len = sizeof(addr);
 
     //casting obbligatorio dell'indirizzo del client
     //(const struct sockaddr *)&addr
     connect(server, (const struct sockaddr *)&addr, client_len);
-    
+
     //riceve il numero di giocatore assegnato dal server
     int temp;
-    recv(server,&temp, sizeof(int), 0);
-    const int numeroAssegnato=temp;
-    printf("Tu sei il giocatore %d\n",numeroAssegnato);
+    recv(server, &temp, sizeof(int), 0);
+    const int numeroAssegnato = temp;
+    printf("Tu sei il giocatore %d\n", numeroAssegnato);
 
-    //while(1){
-        //riceve lo stato della partita
-        int res=recv(server,&stato, sizeof(t_partita), 0);
+    int res = recv(server, &stato, sizeof(t_partita), 0);
+
+    while (stato.PID_Vincitore == 0)
+    {
         stampaStato(stato);
-        while(stato.Turno!=numeroAssegnato){
-            printf("Aspetta, non è ancora il tuo turno;\n");
-            fflush(stdout);
-            sleep(2);
+        if (stato.Turno == numeroAssegnato)
+        {
+            printf("Tocca a te! \n");
+            t_scelta bfr = prendiInput();
+            send(server, &bfr, sizeof(t_scelta), 0);
+
+            /*
+            Aspetto la conferma dal server che la mossa sia corretta
+            Nel caso positivo, ricevo il nuovo stato
+            Nel caso negativo, il server non invia il nuovo stato quindi rieseguo il ciclo
+            */
+            if (isMossaValida(server) == TRUE)
+            {
+                recv(server, &stato, sizeof(t_partita), 0);
             }
-        //invia l'azione al server
-        t_scelta azione=prendiInput();
-        send(server,&azione, sizeof(t_scelta),0);
-    //}
+        }
+        else
+        {
+            printf("Aspetta, non è ancora il tuo turno;\n");
+            recv(server, &stato, sizeof(t_partita), 0);
+        }
+    }
+
+    //TODO: ricever e stampare EsitoPartita(); da implementare
+
     return 0;
+}
+
+int isMossaValida(int server)
+{
+    int flagErrore = 0;
+    recv(server, &flagErrore, sizeof(int), 0);
+
+    if (flagErrore == PILA_ERR)
+    {
+        printf("Attenzione! Errore nella scelta della pila!\n");
+        fflush(stdout);
+        printf("Riprova\n");
+        return FALSE;
+    }
+    else if (flagErrore == PEDINE_ERR)
+    {
+        printf("Attenzione! Errore nel numero di pedine indicato!\n");
+        fflush(stdout);
+        printf("Riprova\n");
+        return FALSE;
+    }
+    return TRUE;
 }
 
 t_scelta prendiInput()
 {
     t_scelta azione;
+    //Pila
     printf("Scegli la pila: ");
-    scanf("%c",&azione.Pila);
+    scanf("%c", &azione.Pila);
+    fflush(stdout); //Svuoto l'output
+    fflush(stdin);  //Svuoto l'input
+    //Num pedine
     printf("Indica il numero di pedine: ");
-    scanf("%d",&azione.numPedine);
+    scanf("%d", &azione.numPedine);
+    fflush(stdout); //Svuoto l'output
+    fflush(stdin);  //Svuoto l'input
+
     return azione;
 }
 
-void stampaStato(t_partita stato){
-    printf("Ora è il turno del giocatore %d\n",stato.Turno);
-    printf("PILA A : %d\n",stato.PilaA);
-    printf("PILA B : %d\n",stato.PilaB);
+void stampaStato(t_partita stato)
+{
+    printf("\t\t _________________________________\n");
+    printf("\t\t| Ora è il turno del giocatore %d |\n", stato.Turno);
+    printf("\t\t| PILA A : %d \t\t\t |\n", stato.PilaA);
+    printf("\t\t| PILA B : %d \t\t\t |\n", stato.PilaB);
+    printf("\t\t|________________________________|\n");
 }
 
 void avvisaUscita()
 {
     printf("Ok, bye bye! \n");
-    //TODO: comunicare al server l'uscita
+    kill(getpid(), 0);
+    //comunicare al server l'uscita
     //Volendo si può fare un controllo, tipo "sicuro di uscire? Digita n" etc.
     //Però bah, è superfluo, cioè ctrl+c vuol dire che sai già di voler uscire ahah
 }
-
