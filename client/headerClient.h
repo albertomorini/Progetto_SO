@@ -50,3 +50,5 @@ int isMossaValida(int server);
 
 //stampa l'esito finale della partita
 void esitoPartita(int numeroAssegnato,t_partita stato);
+
+void check(int result, int exitval);

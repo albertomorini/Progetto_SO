@@ -60,6 +60,8 @@ void gestioneGioco(int *fd)
     aggiornaStatoPartita(stato,Players);
     close(Players.FD_Player1);
     close(Players.FD_Player2);
+
+    fprintf(stderr,"\n---Una partita è terminata, chiudo le connessioni---\n");
 }
 
 void inviaInfo(t_coppia Players)

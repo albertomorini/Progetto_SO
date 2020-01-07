@@ -34,12 +34,12 @@ int main()
         //accetto la connessione di player1
         *fd = accept(sock, (struct sockaddr *)&client_addr, &client_len);
         check(*fd,SOCK_ERR_ACCEPT);
-        fprintf(stderr,"Player 1 connesso, attendo l'avversario..\n");
+        fprintf(stderr,"\nUn giocatore si è connesso, attendo l'avversario..\n");
         
         //accetto la connessione del player2
         *(fd+1) = accept(sock, (struct sockaddr *)&client_addr, &client_len);
         check(*(fd+1),SOCK_ERR_ACCEPT);
-        fprintf(stderr,"\nPlayer 2 connesso, avvio la partita..\n-------------------------\n");
+        fprintf(stderr,"\nIl giocatore avversario si è connesso, avvio la partita..\n");
 
         //instanzio il thread che lancerà la procedura di partita
         pthread_t thread;
@@ -57,27 +57,31 @@ void check(int result, int exitval) {
     switch (exitval)
     {
     case SOCK_ERR_SOCKET:
-        perror("errore nella creazione del socket -> socket()");
+        perror("Errore nella creazione del socket -> socket()");
         exit(exitval);
         break;
     case SOCK_ERR_BIND:
-        perror("errore nell'assegnazione dell'indirizzo al socket -> bind()");
+        perror("Errore nell'assegnazione dell'indirizzo al socket -> bind()");
         exit(exitval);
         break;
     case SOCK_ERR_LISTEN:
-        perror("socket non valido -> listen()");
+        perror("Socket non valido -> listen()");
         exit(exitval);
         break;
     case SOCK_ERR_ACCEPT:
-        perror("errore durante l'accettazione della connessione dal client -> accept()");
+        perror("Errore durante l'accettazione della connessione dal client -> accept()");
         exit(exitval);
         break;
     case SOCK_ERR_SEND:
-        perror("errore durante l'invio di dati -> send()");
+        perror("Errore durante l'invio di dati -> send()");
         exit(exitval);
         break;
     case SOCK_ERR_RECV:
-        perror("errore durante la ricezione di dati -> recv()");
+        perror("Errore durante la ricezione di dati -> recv()");
+        exit(exitval);
+        break;
+    case SOCK_ERR_CONNECT:
+        perror("Errore durante la connessione al server -> connect()");
         exit(exitval);
         break;
     default:

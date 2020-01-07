@@ -72,6 +72,8 @@ int controllaVittoria(t_partita stato);
 //TODO: da implementare, Controlla che i giocatori siano online
 int controllaConnessioneGiocatori();
 
+void check(int result, int exitval);
+
 
 
 

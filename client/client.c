@@ -7,7 +7,8 @@ int main()
     // signal(SIGINT, avvisaUscita); //CTRL+C
 
     //impostazione del socket locale
-    int server = socket(AF_LOCAL, SOCK_STREAM, 0);
+    int server=socket(AF_LOCAL, SOCK_STREAM, 0);
+    check(server,SOCK_ERR_SOCKET);
 
     //contiene lo stato corrente della partita
     t_partita stato;
@@ -16,20 +17,18 @@ int main()
     socklen_t client_len = sizeof(addr);
 
     //casting obbligatorio dell'indirizzo del client
-    //(const struct sockaddr *)&addr
-    connect(server, (const struct sockaddr *)&addr, client_len);
+    check(connect(server, (const struct sockaddr *)&addr, client_len),SOCK_ERR_CONNECT);
 
     //riceve il numero di giocatore assegnato dal server
     int temp;
-    recv(server, &temp, sizeof(int), 0);
+    check(recv(server, &temp, sizeof(int), 0),SOCK_ERR_RECV);
     const int numeroAssegnato = temp;
     printf("Benvenuto nel NIM SERVER\n");
     fflush(stdout);
-    sleep(1);
+    sleep(2);
 
     //riceve lo stato iniziale della partita
-    int res = recv(server, &stato, sizeof(t_partita), 0);
-    //stampaStato(stato);
+    check(recv(server, &stato, sizeof(t_partita), 0),SOCK_ERR_RECV);
 
     while (stato.Vincitore == NESSUNO)
     {
@@ -41,7 +40,7 @@ int main()
             //invia l'azione del client
             t_scelta bfr;
             bfr = prendiInput();
-            send(server, &bfr, sizeof(t_scelta), 0);
+            check(send(server, &bfr, sizeof(t_scelta), 0),SOCK_ERR_SEND);
 
             /*
             Aspetto la conferma dal server che la mossa sia corretta
@@ -50,7 +49,7 @@ int main()
             */
             if (isMossaValida(server) == OK)
             {
-                recv(server, &stato, sizeof(t_partita), 0);
+                check(recv(server, &stato, sizeof(t_partita), 0),SOCK_ERR_RECV);
             }else{
                 //aspetta che venga premuto un tasto per continuare
                 while(getchar()!='\n');
@@ -62,7 +61,7 @@ int main()
             clearScreen();
             stampaStato(numeroAssegnato,stato);
             printf("Aspetta, non è ancora il tuo turno\n");
-            recv(server, &stato, sizeof(t_partita), 0);
+            check(recv(server, &stato, sizeof(t_partita), 0),SOCK_ERR_RECV);
         }
     }
 
@@ -148,3 +147,25 @@ void clearScreen()
     system("@cls||clear");
     fflush(stdout);
 }
+
+void check(int result, int exitval) {
+  if(result == -1) {
+    switch (exitval)
+    {
+    case SOCK_ERR_SEND:
+        perror("Errore durante l'invio di dati -> send()");
+        exit(exitval);
+        break;
+    case SOCK_ERR_RECV:
+        perror("Errore durante la ricezione di dati -> recv()");
+        exit(exitval);
+        break;
+    case SOCK_ERR_CONNECT:
+        perror("Errore durante la connessione al server -> connect()");
+        exit(exitval);
+        break;
+    default:
+        break;
+    }
+  }
+  }
