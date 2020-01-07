@@ -67,26 +67,26 @@ void inviaInfo(t_coppia Players)
     int numeroAssegnato;
 
     numeroAssegnato = PLAYER1;
-    send(Players.FD_Player1, &numeroAssegnato, sizeof(int), 0);
+    check(send(Players.FD_Player1, &numeroAssegnato, sizeof(int), 0),SOCK_ERR_SEND);
 
     numeroAssegnato = PLAYER2;
-    send(Players.FD_Player2, &numeroAssegnato, sizeof(int), 0);
+    check(send(Players.FD_Player2, &numeroAssegnato, sizeof(int), 0),SOCK_ERR_SEND);
 }
 
 void inviaStatoPartita(t_partita stato, int player){
-    send(player, &stato, sizeof(t_partita), 0);
+    check(send(player, &stato, sizeof(t_partita), 0),SOCK_ERR_SEND);
 }
 
 void aggiornaStatoPartita(t_partita stato, t_coppia Players)
 {
-    send(Players.FD_Player1, &stato, sizeof(t_partita), 0);
-    send(Players.FD_Player2, &stato, sizeof(t_partita), 0);
+    check(send(Players.FD_Player1, &stato, sizeof(t_partita), 0),SOCK_ERR_SEND);
+    check(send(Players.FD_Player2, &stato, sizeof(t_partita), 0),SOCK_ERR_SEND);
 }
 
 t_partita riceviAzione(t_partita stato, int player)
 {
     t_scelta azione;
-    recv(player, &azione, sizeof(t_scelta), 0);
+    check(recv(player, &azione, sizeof(t_scelta), 0),SOCK_ERR_RECV);
 
     //se pari a 0, l'azione vuol dire che è valida.
     int flagErrore = OK;
@@ -102,14 +102,14 @@ t_partita riceviAzione(t_partita stato, int player)
     {
         //PILA A
         stato.PilaA -= azione.numPedine;
-        send(player, &flagErrore, sizeof(int), 0);
+        check(send(player, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
         return stato;
     }
     else if (azione.Pila == 'B' && controllaRimozione(stato.PilaB, azione.numPedine) == TRUE)
     {
         //PILA B
         stato.PilaB -= azione.numPedine;
-        send(player, &flagErrore, sizeof(int), 0);
+        check(send(player, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
         return stato;
     }
     else
@@ -124,7 +124,7 @@ t_partita riceviAzione(t_partita stato, int player)
             flagErrore=ERR_PEDINE;
         }
 
-        send(player, &flagErrore, sizeof(int), 0);
+        check(send(player, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
         return riceviAzione(stato, player);
     }
 }

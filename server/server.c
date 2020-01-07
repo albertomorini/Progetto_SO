@@ -8,26 +8,20 @@ int main()
     srand(time(NULL)); 
     //Inizializzo socket server
     int sock = socket(AF_LOCAL, SOCK_STREAM, 0);
+    check(sock,SOCK_ERR_SOCKET);
 
     // imposto l'indirizzo del socket
     struct sockaddr_un addr = {
         .sun_family = AF_LOCAL,
         .sun_path = SOCKADDR};
 
+    //rimuovo il file del socket precedente
     unlink(SOCKADDR);
+    //assegno l'indirizzo locale ad un socket
+    check(bind(sock, (struct sockaddr *)&addr, sizeof addr),SOCK_ERR_BIND);
 
-    // lego l'indirizzo al socket di ascolto
-    if (bind(sock,(struct sockaddr *)&addr, sizeof addr) == -1)
-    {
-        perror("bind()");
-        return 2;
-    }
-
-    // Abilito effettivamente l'ascolto, con un massimo di 20 client in attesa
-    listen(sock, 20);
-
-    //Istanzio la struct t_coppia per mantenere i FileDescriptor dei client che si connetteranno
-    //per poi passarla a gioco.c che gestirà la partita e comunicherà con i client
+    // pone il socket in attesa di una connessione, con un massimo di 20 client in attesa
+    check(listen(sock, 20),SOCK_ERR_LISTEN);
 
     while (1)
     {   
@@ -39,10 +33,12 @@ int main()
 
         //accetto la connessione di player1
         *fd = accept(sock, (struct sockaddr *)&client_addr, &client_len);
+        check(*fd,SOCK_ERR_ACCEPT);
         fprintf(stderr,"Player 1 connesso, attendo l'avversario..\n");
         
         //accetto la connessione del player2
         *(fd+1) = accept(sock, (struct sockaddr *)&client_addr, &client_len);
+        check(*(fd+1),SOCK_ERR_ACCEPT);
         fprintf(stderr,"\nPlayer 2 connesso, avvio la partita..\n-------------------------\n");
 
         //instanzio il thread che lancerà la procedura di partita
@@ -50,6 +46,42 @@ int main()
         
         //lancio la partita
         pthread_create(&thread, NULL, creaPartita, fd);
-        
+
+        // Informiamo il sistema del fatto che non verrà mai chiamata pthread_join()
+        pthread_detach(thread);
     }
+}
+
+void check(int result, int exitval) {
+  if(result == -1) {
+    switch (exitval)
+    {
+    case SOCK_ERR_SOCKET:
+        perror("errore nella creazione del socket -> socket()");
+        exit(exitval);
+        break;
+    case SOCK_ERR_BIND:
+        perror("errore nell'assegnazione dell'indirizzo al socket -> bind()");
+        exit(exitval);
+        break;
+    case SOCK_ERR_LISTEN:
+        perror("socket non valido -> listen()");
+        exit(exitval);
+        break;
+    case SOCK_ERR_ACCEPT:
+        perror("errore durante l'accettazione della connessione dal client -> accept()");
+        exit(exitval);
+        break;
+    case SOCK_ERR_SEND:
+        perror("errore durante l'invio di dati -> send()");
+        exit(exitval);
+        break;
+    case SOCK_ERR_RECV:
+        perror("errore durante la ricezione di dati -> recv()");
+        exit(exitval);
+        break;
+    default:
+        break;
+    }
+  }
 }
