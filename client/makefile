@@ -6,4 +6,4 @@ client.o : client.c headerClient.h ../common.h
 	clang -c -g client.c headerClient.h ../common.h
 
 clean :
-	rm -f *.o client 
+	rm -f *.o *.gch client 

@@ -23,7 +23,7 @@ int main()
     int temp;
     check(recv(server, &temp, sizeof(int), 0),SOCK_ERR_RECV);
     const int numeroAssegnato = temp;
-    printf("Benvenuto nel NIM SERVER\n");
+    printf("\n---Benvenuto nel NIM SERVER---\n");
     fflush(stdout);
     sleep(2);
 

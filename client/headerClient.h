@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <signal.h>
-
+ 
 /*
 imposto l'indirizzo del socket
 "sun_path" contiene un file nel filesystem il cui nome, completo di percorso, è specificato come una stringa terminata da uno zero;

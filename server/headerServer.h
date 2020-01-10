@@ -53,7 +53,7 @@ void inviaMessaggio(int fd,char *msg);
  * @return TRUE se si possono togliere le pedine
  */
 int controllaRimozione(int Pila, int numPedine);
-
+ 
 //invia lo stato ad un giocatore specifico
 void inviaStatoPartita(t_partita stato, int player);
 
