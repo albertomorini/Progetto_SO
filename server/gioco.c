@@ -32,7 +32,7 @@ void gestioneGioco(int *fd)
 
         switch (stato.Turno){
             case PLAYER1:
-                stato = riceviAzione(stato, Players.FD_Player1);
+                stato = riceviAzione(stato, Players.FD_Player1 ,PLAYER2);
                 //Se ha vinto, assengo la vittoria
                 if (controllaVittoria(stato) == NESSUNO)
                 {
@@ -42,7 +42,7 @@ void gestioneGioco(int *fd)
                 stato.Turno = PLAYER2;
                 break;
             case PLAYER2:
-                stato = riceviAzione(stato, Players.FD_Player2);
+                stato = riceviAzione(stato, Players.FD_Player2,PLAYER1);
                 if (controllaVittoria(stato) == NESSUNO)
                 {
                     stato.Vincitore = PLAYER2;
@@ -55,9 +55,9 @@ void gestioneGioco(int *fd)
                 break;
             }
     }
-
     //comunica la vittoria
     aggiornaStatoPartita(stato,Players);
+    
     close(Players.FD_Player1);
     close(Players.FD_Player2);
 
@@ -81,14 +81,24 @@ void inviaStatoPartita(t_partita stato, int player){
 
 void aggiornaStatoPartita(t_partita stato, t_coppia Players)
 {
-    check(send(Players.FD_Player1, &stato, sizeof(t_partita), 0),SOCK_ERR_SEND);
-    check(send(Players.FD_Player2, &stato, sizeof(t_partita), 0),SOCK_ERR_SEND);
+    int a,b;
+    a=send(Players.FD_Player1, &stato, sizeof(t_partita), 0);
+    fprintf(stderr,"primo:%d",a);
+    b=send(Players.FD_Player2, &stato, sizeof(t_partita), 0);
+    fprintf(stderr,"secondo:%d",b);
 }
 
-t_partita riceviAzione(t_partita stato, int player)
+t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario)
 {
     t_scelta azione;
-    check(recv(player, &azione, sizeof(t_scelta), 0),SOCK_ERR_RECV);
+    if(recv(playerAttuale, &azione, sizeof(t_scelta), 0)==0){
+        fprintf(stderr,"Il client si è disconnesso;");
+        stato.Vincitore=playerAvversario;
+        stato.Turno=playerAvversario;
+        return stato;
+        //stato.Vincitore=playerAvversario
+      //  send(playerAvversario,&azione,sizeof(t_scelta),0);
+    }
 
     //se pari a 0, l'azione vuol dire che è valida.
     int flagErrore = OK;
@@ -104,14 +114,14 @@ t_partita riceviAzione(t_partita stato, int player)
     {
         //PILA A
         stato.PilaA -= azione.numPedine;
-        check(send(player, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
+        check(send(playerAttuale, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
         return stato;
     }
     else if (azione.Pila == 'B' && controllaRimozione(stato.PilaB, azione.numPedine) == TRUE)
     {
         //PILA B
         stato.PilaB -= azione.numPedine;
-        check(send(player, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
+        check(send(playerAttuale, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
         return stato;
     }
     else
@@ -126,8 +136,8 @@ t_partita riceviAzione(t_partita stato, int player)
             flagErrore=ERR_PEDINE;
         }
 
-        check(send(player, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
-        return riceviAzione(stato, player);
+        check(send(playerAttuale, &flagErrore, sizeof(int), 0),SOCK_ERR_SEND);
+        return riceviAzione(stato, playerAttuale,playerAvversario);
     }
 }
 

@@ -27,7 +27,7 @@ void *creaPartita(void *fd);
 void gestioneGioco(int *fd);
 
 
-t_partita riceviAzione(t_partita stato, int player);
+t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario);
 
 
 /*

@@ -56,36 +56,29 @@ void check(int result, int exitval) {
   if(result == -1) {
     switch (exitval)
     {
-    case SOCK_ERR_SOCKET:
-        perror("Errore nella creazione del socket -> socket()");
-        exit(exitval);
-        break;
-    case SOCK_ERR_BIND:
-        perror("Errore nell'assegnazione dell'indirizzo al socket -> bind()");
-        exit(exitval);
-        break;
-    case SOCK_ERR_LISTEN:
-        perror("Socket non valido -> listen()");
-        exit(exitval);
-        break;
-    case SOCK_ERR_ACCEPT:
-        perror("Errore durante l'accettazione della connessione dal client -> accept()");
-        exit(exitval);
-        break;
-    case SOCK_ERR_SEND:
-        perror("Errore durante l'invio di dati -> send()");
-        exit(exitval);
-        break;
-    case SOCK_ERR_RECV:
-        perror("Errore durante la ricezione di dati -> recv()");
-        exit(exitval);
-        break;
-    case SOCK_ERR_CONNECT:
-        perror("Errore durante la connessione al server -> connect()");
-        exit(exitval);
-        break;
-    default:
-        break;
+        case SOCK_ERR_SOCKET:
+            perror("Errore nella creazione del socket -> socket()");
+            break;
+        case SOCK_ERR_BIND:
+            perror("Errore nell'assegnazione dell'indirizzo al socket -> bind()");
+            break;
+        case SOCK_ERR_LISTEN:
+            perror("Socket non valido -> listen()");
+            break;
+        case SOCK_ERR_ACCEPT:
+            perror("Errore durante l'accettazione della connessione dal client -> accept()");
+            break;
+        case SOCK_ERR_SEND:
+            perror("Errore durante l'invio di dati -> send()");
+            break;
+        case SOCK_ERR_RECV:
+            perror("Errore durante la ricezione di dati -> recv()");
+            break;
+        case SOCK_ERR_CONNECT:
+            perror("Errore durante la connessione al server -> connect()");
+            break;
+        default:
+            break;
+        }
     }
   }
-}
