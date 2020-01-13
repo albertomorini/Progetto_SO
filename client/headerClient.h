@@ -41,9 +41,6 @@ void aggiornaStato();
 //stampa l'errore relativo allo status
 void stampaErrore(int statusAzione);
 
-//Se un segnale viene eseguito, viene invocata la procedura avvisaUscita che si occuperà di avvisare il server
-void avvisaUscita();
-
 //Si occupa di ricevere dal server l'esito della scelta inviata da client
 //Inoltre traduce anche a video l'errore nel caso la mossa sia scorretta.
 int isMossaValida(int server);
@@ -51,4 +48,5 @@ int isMossaValida(int server);
 //stampa l'esito finale della partita
 void esitoPartita(int numeroAssegnato,t_partita stato);
 
+//stampa i potenziali errori generati dalle funzioni socket
 void check(int result, int exitval);

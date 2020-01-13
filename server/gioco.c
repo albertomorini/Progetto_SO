@@ -52,16 +52,18 @@ void gestioneGioco(int *fd)
             
             default:
                 //non dovrebbe mai arrivare qui, ma in caso si potrebbe lanciare un errore generico
+                //TODO: Bah, mi limito a un semplice output che dici?
+                fprintf(stderr,"Errore, qualcosa è andato storto");
                 break;
             }
     }
     //comunica la vittoria
     aggiornaStatoPartita(stato,Players);
-    
+    //chiudo le connessioni con i clientß
     close(Players.FD_Player1);
     close(Players.FD_Player2);
 
-    fprintf(stderr,"\n---Una partita è terminata, chiudo le connessioni---\n");
+    fprintf(stderr,"\n---Una partita è terminata, le connessioni sono state chiuse---\n");
 }
 
 void inviaInfo(t_coppia Players)
@@ -81,23 +83,25 @@ void inviaStatoPartita(t_partita stato, int player){
 
 void aggiornaStatoPartita(t_partita stato, t_coppia Players)
 {
-    int a,b;
-    a=send(Players.FD_Player1, &stato, sizeof(t_partita), 0);
-    fprintf(stderr,"primo:%d",a);
-    b=send(Players.FD_Player2, &stato, sizeof(t_partita), 0);
-    fprintf(stderr,"secondo:%d",b);
+    /*
+    Ignoro il segnale SIGPIPE tornato dalla funzione send(),
+    in modo tale da non far cadere il server nel caso di
+    errore (server disconnesso). 
+    */
+    sigignore(SIGPIPE);
+    send(Players.FD_Player1, &stato, sizeof(t_partita), 0);send(Players.FD_Player2, &stato, sizeof(t_partita), 0);
 }
 
 t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario)
 {
     t_scelta azione;
+    //Controllo la ricezione dal client, se 0 -> client disconnesso
     if(recv(playerAttuale, &azione, sizeof(t_scelta), 0)==0){
+        //Client disconnesso, assegno la vittoria all'avversario
         fprintf(stderr,"Il client si è disconnesso;");
         stato.Vincitore=playerAvversario;
         stato.Turno=playerAvversario;
         return stato;
-        //stato.Vincitore=playerAvversario
-      //  send(playerAvversario,&azione,sizeof(t_scelta),0);
     }
 
     //se pari a 0, l'azione vuol dire che è valida.
@@ -148,13 +152,6 @@ int controllaRimozione(int pedinePila, int numPedine)
         return TRUE;
     }
     return FALSE;
-}
-
-//TODO:da implementare
-int controllaConnessioneGiocatori()
-{
-    //utile solo per riuscire a compilare
-    return 1;
 }
 
 int controllaVittoria(t_partita stato)

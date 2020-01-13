@@ -2,10 +2,6 @@
 
 int main()
 {
-    //TODO: da implementare meglio.
-    //Avvio i segnali
-    // signal(SIGINT, avvisaUscita); //CTRL+C
-
     //impostazione del socket locale
     int server=socket(AF_LOCAL, SOCK_STREAM, 0);
     check(server,SOCK_ERR_SOCKET);
@@ -131,15 +127,6 @@ void stampaStato(int numeroAssegnato,t_partita stato)
     printf("\t\t| PILA A : %d \t\t\t |\n", stato.PilaA);
     printf("\t\t| PILA B : %d \t\t\t |\n", stato.PilaB);
     printf("\t\t|________________________________|\n\n");
-}
-
-void avvisaUscita()
-{
-    printf("Ok, bye bye! \n");
-    kill(getpid(), 0);
-    //comunicare al server l'uscita
-    //Volendo si può fare un controllo, tipo "sicuro di uscire? Digita n" etc.
-    //Però bah, è superfluo, cioè ctrl+c vuol dire che sai già di voler uscire ahah
 }
 
 void clearScreen()

@@ -8,7 +8,6 @@
 #include <sys/un.h> // per struct sockaddr_un
 #include <sys/socket.h>
 #include <sys/wait.h>
-#include <signal.h>
 #include <pthread.h>
 #include <math.h>
 
@@ -57,10 +56,6 @@ int controllaRimozione(int Pila, int numPedine);
 //invia lo stato ad un giocatore specifico
 void inviaStatoPartita(t_partita stato, int player);
 
-//stampa su terminale le pile della struct Partita
-//TODO: da implementare? Serve?
-void printPile();
-
 /**
  * comunica ad entrambi i client il numero assegnato a loro dal server
  */
@@ -69,11 +64,5 @@ void inviaInfo();
 //ritorna TRUE se entrambe le pile sono vuote, altrimenti FALSE
 int controllaVittoria(t_partita stato);
 
-//TODO: da implementare, Controlla che i giocatori siano online
-int controllaConnessioneGiocatori();
-
+//stampa i potenziali errori generati dalle funzioni socket
 void check(int result, int exitval);
-
-
-
-
