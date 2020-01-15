@@ -35,7 +35,7 @@ t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario);
 void aggiornaStatoPartita(t_partita stato, t_coppia fd);
 
 /*
-    //invia lo stato ad entrambi i giocatori
+    invia lo stato ad entrambi i giocatori
 */
 void inviaMessaggio(int fd,char *msg);
 
@@ -43,8 +43,6 @@ void inviaMessaggio(int fd,char *msg);
  * Si occupa di ricevere la struttura scelta dal client e aggiornare quella locale
  * e di rimuovere il num di pedine scelto dalla pila selezionata
  */
- //t_partita riceviDaClient(t_partita stato, t_scelta azione,int PIDplayer);
-
 /**
  * @require numero di pedine NON può essere maggiore del numero di pedine in pila o pari a zero
  * @param Pila è la Pila slezionata

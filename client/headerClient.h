@@ -21,8 +21,8 @@ const struct sockaddr_un addr = {
 };
 
 /*
-Si occupa di prendere l'input da tastiera dell'utente.
-Quindi la scelta della Pila e il numero di pedine.
+  Si occupa di prendere l'input da tastiera dell'utente.
+  Quindi la scelta della Pila e il numero di pedine.
 */
 t_scelta prendiInput();
 
@@ -41,8 +41,10 @@ void aggiornaStato();
 //stampa l'errore relativo allo status
 void stampaErrore(int statusAzione);
 
-//Si occupa di ricevere dal server l'esito della scelta inviata da client
-//Inoltre traduce anche a video l'errore nel caso la mossa sia scorretta.
+/*
+  Si occupa di ricevere dal server l'esito della scelta inviata da client
+  Inoltre traduce anche a video l'errore nel caso la mossa sia scorretta.
+*/
 int isMossaValida(int server);
 
 //stampa l'esito finale della partita

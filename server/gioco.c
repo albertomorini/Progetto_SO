@@ -51,8 +51,7 @@ void gestioneGioco(int *fd)
                 break;
             
             default:
-                //non dovrebbe mai arrivare qui, ma in caso si potrebbe lanciare un errore generico
-                //TODO: Bah, mi limito a un semplice output che dici?
+                //Il programma non arrivà mai in questo stato... tuttavia avviso che c'è stato un errore
                 fprintf(stderr,"Errore, qualcosa è andato storto");
                 break;
             }
@@ -98,7 +97,7 @@ t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario)
     //Controllo la ricezione dal client, se 0 -> client disconnesso
     if(recv(playerAttuale, &azione, sizeof(t_scelta), 0)==0){
         //Client disconnesso, assegno la vittoria all'avversario
-        fprintf(stderr,"Il client si è disconnesso;");
+        fprintf(stderr,"Un client si è disconnesso");
         stato.Vincitore=playerAvversario;
         stato.Turno=playerAvversario;
         return stato;
@@ -130,7 +129,7 @@ t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario)
     }
     else
     {   
-        //ZONA DI ERRORE UTENTE
+        //ZONA DI ERRORE - MOSSA UTENTE NON VALIDA
         //Se siamo in questa sezione il client ha indicato una mossa non valida
         //L'errore può essere: Pila errata || NumeroPedine non valido
         if (azione.Pila != 'A' && azione.Pila != 'B')

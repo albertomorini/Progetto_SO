@@ -39,9 +39,9 @@ int main()
             check(send(server, &bfr, sizeof(t_scelta), 0),SOCK_ERR_SEND);
 
             /*
-            Aspetto la conferma dal server che la mossa sia corretta
-            Nel caso positivo, ricevo il nuovo stato
-            Nel caso negativo, il server non invia il nuovo stato quindi rieseguo il ciclo
+                Aspetto la conferma dal server che la mossa sia corretta
+                Nel caso positivo, ricevo il nuovo stato
+                Nel caso negativo, il server non invia il nuovo stato quindi rieseguo il ciclo
             */
             if (isMossaValida(server) == OK)
             {
@@ -67,7 +67,8 @@ int main()
     return 0;
 }
 
-void esitoPartita(int numeroAssegnato,t_partita stato){
+void esitoPartita(int numeroAssegnato,t_partita stato)
+{
     if(stato.Vincitore==numeroAssegnato){
         printf("\t\t_________________________________\n");
         printf("\t\t|                                |\n");
@@ -135,7 +136,8 @@ void clearScreen()
     fflush(stdout);
 }
 
-void check(int result, int exitval) {
+void check(int result, int exitval)
+{
   if(result == -1) {
     switch (exitval)
     {
@@ -155,4 +157,4 @@ void check(int result, int exitval) {
         break;
     }
   }
-  }
+}

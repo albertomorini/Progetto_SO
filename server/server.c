@@ -19,15 +19,12 @@ int main()
     unlink(SOCKADDR);
     //assegno l'indirizzo locale ad un socket
     
-    //TODO: rivedere il bind per il discorso MacOS
-    /*
-    check(bind(sock,(struct sockaddr *)&addr, sizeof addr),SOCK_ERR_BIND);
-    */
-    if (bind(sock,(struct sockaddr *)&addr, sizeof addr) == -1)
+    //se bind() ritorna -1, stampo il relativo errore e restituisco 2 termiando il programma(il main)
+    if (bind(sock, (struct sockaddr *)&addr, sizeof addr) == -1)
     {
-        perror("bind()");
+        check(-1,SOCK_ERR_BIND);
         return 2;
-    }
+    }   
 
     // pone il socket in attesa di una connessione, con un massimo di 20 client in attesa
     check(listen(sock, 20),SOCK_ERR_LISTEN);
