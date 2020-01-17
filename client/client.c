@@ -2,6 +2,7 @@
 
 int main()
 {
+    fprintf(stderr,"Attendi l'avversario"); 
     //impostazione del socket locale
     int server=socket(AF_LOCAL, SOCK_STREAM, 0);
     check(server,SOCK_ERR_SOCKET);
@@ -69,19 +70,19 @@ int main()
 
 void esitoPartita(int numeroAssegnato,t_partita stato)
 {
-    if(stato.Vincitore==numeroAssegnato&&stato.Status==DISCONNESSIONE){
+    if(stato.Vincitore==numeroAssegnato){
         if(stato.Status==DISCONNESSIONE){
                 printf("\t\t_________________________________\n");
                 printf("\t\t|Il tuo avversario si è ritirato!|\n");
                 printf("\t\t|     Complimenti, HAI VINTO!    |\n");
                 printf("\t\t|________________________________|\n");
-            }else{
+        }else{
                 printf("\t\t_________________________________\n");
                 printf("\t\t|                                |\n");
                 printf("\t\t|     Complimenti, HAI VINTO!    |\n");
                 printf("\t\t|________________________________|\n");
 
-            }
+        }
     }else{
         printf("\t\t_________________________________\n");
         printf("\t\t|                                |\n");

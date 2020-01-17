@@ -54,7 +54,7 @@ typedef struct coppia
 #define ERR_PILA 2
 #define ERR_PEDINE 3
 #define CONNESSIONE_ON 9
-#define DISCONNESSIONE 0
+#define DISCONNESSIONE 99
 
 //Errori socket
 #define SOCK_ERR_SOCKET 1
