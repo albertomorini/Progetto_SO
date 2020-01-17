@@ -24,6 +24,7 @@ void gestioneGioco(int *fd)
     stato.PilaB = (2 + rand() % 48);
     stato.Vincitore = NESSUNO;
     stato.Turno=PLAYER1;
+    stato.Status=OK;
 
     //finché non c'è un vincitore
     while (stato.Vincitore == NESSUNO)
@@ -85,10 +86,11 @@ void aggiornaStatoPartita(t_partita stato, t_coppia Players)
     /*
     Ignoro il segnale SIGPIPE tornato dalla funzione send(),
     in modo tale da non far cadere il server nel caso di
-    errore (server disconnesso). 
+    errore (client disconnesso). 
     */
     sigignore(SIGPIPE);
-    send(Players.FD_Player1, &stato, sizeof(t_partita), 0);send(Players.FD_Player2, &stato, sizeof(t_partita), 0);
+    send(Players.FD_Player1, &stato, sizeof(t_partita), 0);
+    send(Players.FD_Player2, &stato, sizeof(t_partita), 0);
 }
 
 t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario)
@@ -100,6 +102,7 @@ t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario)
         fprintf(stderr,"Un client si è disconnesso");
         stato.Vincitore=playerAvversario;
         stato.Turno=playerAvversario;
+        stato.Status=DISCONNESSIONE;
         return stato;
     }
 

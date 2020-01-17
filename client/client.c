@@ -69,17 +69,27 @@ int main()
 
 void esitoPartita(int numeroAssegnato,t_partita stato)
 {
-    if(stato.Vincitore==numeroAssegnato){
-        printf("\t\t_________________________________\n");
-        printf("\t\t|                                |\n");
-        printf("\t\t|     Complimenti, HAI VINTO!    |\n");
-        printf("\t\t|________________________________|\n");
+    if(stato.Vincitore==numeroAssegnato&&stato.Status==DISCONNESSIONE){
+        if(stato.Status==DISCONNESSIONE){
+                printf("\t\t_________________________________\n");
+                printf("\t\t|Il tuo avversario si è ritirato!|\n");
+                printf("\t\t|     Complimenti, HAI VINTO!    |\n");
+                printf("\t\t|________________________________|\n");
+            }else{
+                printf("\t\t_________________________________\n");
+                printf("\t\t|                                |\n");
+                printf("\t\t|     Complimenti, HAI VINTO!    |\n");
+                printf("\t\t|________________________________|\n");
+
+            }
     }else{
         printf("\t\t_________________________________\n");
         printf("\t\t|                                |\n");
         printf("\t\t|     Mi dispiace, HAI PERSO!    |\n");
         printf("\t\t|________________________________|\n");
+
     }
+    
 }
 
 int isMossaValida(int server)

@@ -16,6 +16,7 @@ typedef struct partitaGioco
     int PilaB;
     int Vincitore;
     int Turno;
+    int Status;
 }t_partita;
 
 /**
@@ -26,7 +27,6 @@ typedef struct scelta
 {
     char Pila;
     int numPedine;
-    int status;
 }t_scelta;
 
 /**
