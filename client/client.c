@@ -16,6 +16,7 @@ int main()
     //casting obbligatorio dell'indirizzo del client
     check(connect(server, (const struct sockaddr *)&addr, client_len),SOCK_ERR_CONNECT);
 
+
     //riceve il numero di giocatore assegnato dal server
     int temp;
     check(recv(server, &temp, sizeof(int), 0),SOCK_ERR_RECV);

@@ -7,4 +7,4 @@ server.o : server.c gioco.c headerServer.h ../common.h
 
 
 clean :
-	rm -f *.o *.gch server 
+	rm -f *.o *.gch server

@@ -1,14 +1,7 @@
+#ifndef HEADER_CLIENT_H
+#define HEADER_CLIENT_H
+
 #include "../common.h"
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
-#include <sys/un.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <signal.h>
  
 /*
 imposto l'indirizzo del socket
@@ -52,3 +45,5 @@ void esitoPartita(int numeroAssegnato,t_partita stato);
 
 //stampa i potenziali errori generati dalle funzioni socket
 void check(int result, int exitval);
+
+#endif

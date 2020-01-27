@@ -1,7 +1,19 @@
 // Header comune al Server e Client
+#ifndef COMMON_H
+#define COMMON_H
 
 //indirizzo dove verrà salvato il file temporaneo per la comunicazione socket
 #define SOCKADDR "/tmp/upperserver.socket"
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/un.h> // per struct sockaddr_un
+#include <sys/wait.h>
+#include <pthread.h>
+#include <math.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <sys/socket.h>
@@ -64,3 +76,5 @@ typedef struct coppia
 #define SOCK_ERR_SEND 5
 #define SOCK_ERR_RECV 6
 #define SOCK_ERR_CONNECT 7
+
+#endif
