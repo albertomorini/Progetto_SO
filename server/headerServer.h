@@ -42,12 +42,7 @@ void inviaMessaggio(int fd,char *msg);
 /**
  * Si occupa di ricevere la struttura scelta dal client e aggiornare quella locale
  * e di rimuovere il num di pedine scelto dalla pila selezionata
- */
-/**
- * @require numero di pedine NON può essere maggiore del numero di pedine in pila o pari a zero
- * @param Pila è la Pila slezionata
- * @param numPedine numero pedine da togliere (<= Pila per aver successo)
- * @return TRUE se si possono togliere le pedine
+ * @return TRUE se le pedine si possono rimuovere dalla Pila selezionata
  */
 int controllaRimozione(int Pila, int numPedine);
  
