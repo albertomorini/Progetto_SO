@@ -6,20 +6,17 @@ int main()
 
     //chiamata fatta una volta per inizializzare il random, così da evitare da avere random uguali ogni volta
     srand(time(NULL)); 
-    //Inizializzo socket server
     int sock = socket(AF_LOCAL, SOCK_STREAM, 0);
     check(sock,SOCK_ERR_SOCKET);
 
-    // imposto l'indirizzo del socket
     struct sockaddr_un addr = {
         .sun_family = AF_LOCAL,
         .sun_path = SOCKADDR};
 
     //rimuovo il file del socket precedente
     unlink(SOCKADDR);
+
     //assegno l'indirizzo locale ad un socket
-    
-    //se bind() ritorna -1, stampo il relativo errore e restituisco 2 termiando il programma(il main)
     if (bind(sock, (struct sockaddr *)&addr, sizeof addr) == -1)
     {
         check(-1,SOCK_ERR_BIND);
@@ -34,26 +31,26 @@ int main()
         struct sockaddr_un client_addr;
         socklen_t client_len = sizeof(client_addr);
 
-        //contiene la coppia di file descriptor
-        int *fd; 
+        //contiene i socket dei giocatori
+        int *socketGiocatori = malloc(sizeof(int)*2); 
 
         //accetto la connessione di player1
-        *fd = accept(sock, (struct sockaddr *)&client_addr, &client_len);
-        check(*fd,SOCK_ERR_ACCEPT);
+        socketGiocatori[0] = accept(sock, (struct sockaddr *)&client_addr, &client_len);
+        check(socketGiocatori[0],SOCK_ERR_ACCEPT);
         fprintf(stderr,"\nUn giocatore si è connesso, attendo l'avversario..\n");
         
         //accetto la connessione del player2
-        *(fd+1) = accept(sock, (struct sockaddr *)&client_addr, &client_len);
-        check(*(fd+1),SOCK_ERR_ACCEPT);
+        socketGiocatori[1] = accept(sock, (struct sockaddr *)&client_addr, &client_len);
+        check(socketGiocatori[1],SOCK_ERR_ACCEPT);
         fprintf(stderr,"\nIl giocatore avversario si è connesso, avvio la partita..\n");
 
         //instanzio il thread che lancerà la procedura di partita
         pthread_t thread;
         
         //lancio la partita
-        pthread_create(&thread, NULL, creaPartita, fd);
+        pthread_create(&thread, NULL, creaPartita, socketGiocatori);
 
-        // Informiamo il sistema del fatto che non verrà mai chiamata pthread_join()
+        //informiamo il sistema del fatto che non verrà mai chiamata pthread_join()
         pthread_detach(thread);
     }
 }

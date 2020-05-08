@@ -6,46 +6,28 @@
 
 #include <time.h> //for random
 
-void *creaPartita(void *fd);
+//funzione invocata dal thread, chiama "gestioneGioco(...)" per avviare la partita
+void *creaPartita(void *socketGiocatori);
 
-/**
- * Player1, Player2 = file descriptor dei giocatori(clients)
- * Metodo di creazione del gioco, si occupa di instanziare le variabili necessarie e di gestire lo sviluppo del gioco.
- * Crea un numero random di pedine per ogni pila(2)
- * Interagisce col client
- */
-void gestioneGioco(int *fd);
+//funzione che gestisce la partita
+void gestioneGioco(int *socketGiocatori);
 
-
+//riceve un'azione compiuta da un giocatore
 t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario);
 
+//invia gli aggiornamenti della partita ai client
+void aggiornaStatoPartita(t_partita stato, t_coppia giocatori);
 
-/*
-    Invia gli aggiornamenti della partita ai due client
-*/
-void aggiornaStatoPartita(t_partita stato, t_coppia fd);
-
-/*
-    invia lo stato ad entrambi i giocatori
-*/
-void inviaMessaggio(int fd,char *msg);
-
-/**
- * Si occupa di ricevere la struttura scelta dal client e aggiornare quella locale
- * e di rimuovere il num di pedine scelto dalla pila selezionata
- * @return TRUE se le pedine si possono rimuovere dalla Pila selezionata
- */
+//controlla se la rimozione è valida
 int controllaRimozione(int Pila, int numPedine);
  
-//invia lo stato ad un giocatore specifico
+//invia lo stato della partita ad un giocatore specifico
 void inviaStatoPartita(t_partita stato, int player);
 
-/**
- * comunica ad entrambi i client il numero assegnato a loro dal server
- */
-void inviaInfo();
+//comunica ad entrambi i client il numero assegnato loro dal server
+void inviaInfo(t_coppia giocatori);
 
-//ritorna TRUE se entrambe le pile sono vuote, altrimenti FALSE
+//controlla se uno dei giocatori ha vinto
 int controllaVittoria(t_partita stato);
 
 //stampa i potenziali errori generati dalle funzioni socket

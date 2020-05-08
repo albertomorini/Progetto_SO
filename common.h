@@ -18,17 +18,14 @@
 #include <signal.h>
 #include <sys/socket.h>
 
-/**
- * Struct utilizzata per salvare la mossa del player che verrà 
- * poi comunicata al server
- */
-typedef struct partitaGioco
+
+typedef struct partita
 {
-    int PilaA;
-    int PilaB;
-    int Vincitore;
-    int Turno;
-    int Status;
+    int pilaA;
+    int pilaB;
+    int vincitore;
+    int turno;
+    int status;
 }t_partita;
 
 /**
@@ -37,7 +34,7 @@ typedef struct partitaGioco
  */
 typedef struct scelta
 {
-    char Pila;
+    char pila;
     int numPedine;
 }t_scelta;
 
@@ -47,8 +44,7 @@ typedef struct scelta
 */
 typedef struct coppia
 {
-    int FD_Player1;
-    int FD_Player2;
+    int g1,g2;
 }t_coppia;
 
 #define TRUE 0
