@@ -6,6 +6,7 @@ int main()
 
     //chiamata fatta una volta per inizializzare il random, così da evitare da avere random uguali ogni volta
     srand(time(NULL)); 
+    
     int sock = socket(AF_LOCAL, SOCK_STREAM, 0);
     check(sock,SOCK_ERR_SOCKET);
 

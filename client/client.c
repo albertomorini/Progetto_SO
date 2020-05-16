@@ -51,7 +51,8 @@ int main(){
         else{
             clearScreen();
             stampaStato(numeroAssegnato,stato);
-            printf("Aspetta, non è ancora il tuo turno\n");
+            printf("Aspetta, non è ancora il tuo turno");
+            fflush(stdout);
             check(recv(server, &stato, sizeof(t_partita), 0),SOCK_ERR_RECV);
         }
     }
@@ -89,11 +90,13 @@ int isMossaValida(int server){
     recv(server, &flagErrore, sizeof(int), 0);
 
     if (flagErrore == ERR_PILA){
-        printf("Attenzione! Errore nella scelta della pila!\npremi ENTER per riprovare");
+        printf("Attenzione! Errore nella scelta della pila! Premi ENTER per riprovare");
+        fflush(stdout);
         getchar();
     }
     else if (flagErrore == ERR_PEDINE){
-        printf("Attenzione! Errore nel numero di pedine indicato!\npremi ENTER per riprovare");
+        printf("Attenzione! Errore nel numero di pedine indicato! Premi ENTER per riprovare");
+        fflush(stdout);
         getchar();
     }
     return flagErrore;
@@ -101,11 +104,10 @@ int isMossaValida(int server){
 
 t_scelta prendiInput(){
     t_scelta azione;
-
     printf("Scegli la pila: ");
-    scanf("%c",&azione.pila);
+    scanf(" %c",&azione.pila);
     printf("\nIndica il numero di pedine: ");
-    scanf("%d", &azione.numPedine);
+    scanf(" %d", &azione.numPedine);
 
     return azione;
 }

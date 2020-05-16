@@ -23,7 +23,7 @@ void gestioneGioco(int *socketGiocatori){
     stato.turno=PLAYER1;
     stato.status=OK;
 
-    //finché non c'è un vincitore
+    //finché non c'è un vincitore eseguo il ciclo che gestisce la partita
     while (stato.vincitore == NESSUNO){
         aggiornaStatoPartita(stato, giocatori);
 
@@ -40,9 +40,11 @@ void gestioneGioco(int *socketGiocatori){
 
             case PLAYER2:
                 stato = riceviAzione(stato, giocatori.g2,PLAYER1);
+                //se g2 ha vinto assegno la vittoria
                 if (controllaVittoria(stato) == NESSUNO){
                     stato.vincitore = PLAYER2;
                 }
+                //assegno il turno a g1
                 stato.turno = PLAYER1;
                 break;
     
@@ -99,7 +101,7 @@ t_partita riceviAzione(t_partita stato, int playerAttuale,int playerAvversario)
     //controllo la ricezione dal client, se 0 -> client disconnesso
     if(recv(playerAttuale, &azione, sizeof(t_scelta), 0)==0){
         //client disconnesso, assegno la vittoria all'avversario
-        fprintf(stderr,"Un client si è disconnesso");
+        fprintf(stderr,"\nUn client si è disconnesso\n");
         stato.vincitore=playerAvversario;
         stato.turno=playerAvversario;
         stato.status=DISCONNESSIONE;
