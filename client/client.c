@@ -89,11 +89,11 @@ int isMossaValida(int server){
     recv(server, &flagErrore, sizeof(int), 0);
 
     if (flagErrore == ERR_PILA){
-        printf("Attenzione! Errore nella scelta della pila, riprova!\n");
+        printf("Attenzione! Errore nella scelta della pila!\npremi ENTER per riprovare");
         getchar();
     }
     else if (flagErrore == ERR_PEDINE){
-        printf("Attenzione! Errore nel numero di pedine indicato, riprova!\n");
+        printf("Attenzione! Errore nel numero di pedine indicato!\npremi ENTER per riprovare");
         getchar();
     }
     return flagErrore;
